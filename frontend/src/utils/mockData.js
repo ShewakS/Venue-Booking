@@ -1,31 +1,27 @@
 export const mockSpaces = [
   {
     id: 1,
-    name: "Lab 101",
+    name: "Bytes Lab",
     type: "Computer Lab",
-    capacity: 40,
-    equipment: ["PCs", "Projector", "Whiteboard"],
+    capacity: 120,
   },
   {
     id: 2,
-    name: "Seminar Hall 2",
+    name: "Vista Hall",
     type: "Seminar Hall",
-    capacity: 120,
-    equipment: ["Projector", "PA System", "Stage Lighting"],
+    capacity: 200,
   },
   {
     id: 3,
-    name: "Classroom C1",
+    name: "Classroom SF05",
     type: "Classroom",
-    capacity: 60,
-    equipment: ["Whiteboard", "Smart Screen"],
+    capacity: 80,
   },
   {
     id: 4,
-    name: "Innovation Studio",
-    type: "Workshop Lab",
-    capacity: 30,
-    equipment: ["3D Printer", "Laser Cutter", "Workbenches"],
+    name: "Code Studio",
+    type: "Computer Lab",
+    capacity: 250,
   },
 ];
 
@@ -39,9 +35,8 @@ export const mockBookings = [
     start: "09:00",
     end: "11:00",
     participants: 35,
-    equipment: ["PCs"],
     status: "Approved",
-    requestedBy: "Dr. Singh",
+    requestedBy: "Dr. Ram Charan",
     requestedRole: "faculty",
   },
   {
@@ -53,9 +48,8 @@ export const mockBookings = [
     start: "14:00",
     end: "16:00",
     participants: 24,
-    equipment: ["Workbenches"],
     status: "Pending",
-    requestedBy: "Asha Patel",
+    requestedBy: "Mr. Kumar",
     requestedRole: "coordinator",
   },
   {
@@ -67,9 +61,8 @@ export const mockBookings = [
     start: "10:00",
     end: "12:00",
     participants: 90,
-    equipment: ["Projector", "PA System"],
     status: "Pending",
-    requestedBy: "Prof. Lee",
+    requestedBy: "Prof. Rani",
     requestedRole: "faculty",
   },
 ];

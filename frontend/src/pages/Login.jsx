@@ -32,7 +32,7 @@ const Login = () => {
           <label className="input-field" htmlFor="role">
             <span>Role</span>
             <select id="role" value={role} onChange={(event) => setRole(event.target.value)}>
-              <option value={ROLES.ADMIN}>Admin</option>
+              <option value={ROLES.ADMIN}>Event Organizer</option>
               <option value={ROLES.FACULTY}>Faculty</option>
               <option value={ROLES.COORDINATOR}>Student Coordinator</option>
             </select>

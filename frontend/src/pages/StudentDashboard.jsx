@@ -1,13 +1,11 @@
 import React from "react";
 import { useAuth } from "../context/AuthContext";
 import { useData } from "../context/DataContext";
-import SpaceList from "../components/space/SpaceList";
-import BookingForm from "../components/booking/BookingForm";
 import BookingList from "../components/booking/BookingList";
 
 const StudentDashboard = () => {
   const { user } = useAuth();
-  const { spaces, bookings, timetable, addBooking } = useData();
+  const { spaces, bookings, timetable } = useData();
 
   const myBookings = bookings.filter((booking) => booking.requestedBy === user?.name);
 
@@ -28,9 +26,11 @@ const StudentDashboard = () => {
           <p>{timetable.length}</p>
         </div>
       </div>
-      <SpaceList spaces={spaces} />
-      <BookingForm spaces={spaces} bookings={bookings} timetable={timetable} onAddBooking={addBooking} />
-      <BookingList bookings={myBookings} spaces={spaces} />
+
+      <div className="card">
+        <h3>Booking Requests</h3>
+        <BookingList bookings={myBookings} spaces={spaces} />
+      </div>
     </div>
   );
 };

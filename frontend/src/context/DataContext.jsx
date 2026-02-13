@@ -7,6 +7,7 @@ export const DataProvider = ({ children }) => {
   const [spaces, setSpaces] = useState([]);
   const [bookings, setBookings] = useState([]);
   const [timetable, setTimetable] = useState([]);
+  const [timetableOverrides, setTimetableOverrides] = useState([]);
 
   useEffect(() => {
     setSpaces(mockSpaces);
@@ -47,13 +48,33 @@ export const DataProvider = ({ children }) => {
       spaces,
       bookings,
       timetable,
+      timetableOverrides,
       addSpace,
       updateSpace,
       deleteSpace,
       addBooking,
       updateBookingStatus,
+      setTimetableOverride: (override) => {
+        setTimetableOverrides((prev) => {
+          const rest = prev.filter(
+            (item) =>
+              !(
+                item.spaceId === override.spaceId &&
+                item.date === override.date &&
+                item.start === override.start &&
+                item.end === override.end
+              )
+          );
+
+          if (!override.status) {
+            return rest;
+          }
+
+          return [...rest, override];
+        });
+      },
     }),
-    [spaces, bookings, timetable]
+    [spaces, bookings, timetable, timetableOverrides]
   );
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

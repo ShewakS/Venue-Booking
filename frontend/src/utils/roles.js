@@ -4,6 +4,12 @@ export const ROLES = {
   COORDINATOR: "coordinator",
 };
 
+export const ROLE_LABELS = {
+  [ROLES.ADMIN]: "Event Organizer",
+  [ROLES.FACULTY]: "Faculty",
+  [ROLES.COORDINATOR]: "Student Coordinator",
+};
+
 export const roleHomePath = (role) => {
   switch (role) {
     case ROLES.ADMIN:

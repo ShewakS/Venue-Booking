@@ -1,6 +1,5 @@
 import React from "react";
 import SpaceList from "../components/space/SpaceList";
-import CalendarView from "../components/calendar/CalendarView";
 import { useData } from "../context/DataContext";
 
 const SpacePage = () => {
@@ -8,9 +7,8 @@ const SpacePage = () => {
 
   return (
     <div style={{ display: "grid", gap: "16px" }}>
-      <h2>Space Availability</h2>
+      <h2>Available Spaces</h2>
       <SpaceList spaces={spaces} />
-      <CalendarView />
     </div>
   );
 };

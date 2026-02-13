@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import InputField from "../common/InputField";
 import Button from "../common/Button";
 import { useAuth } from "../../context/AuthContext";
@@ -15,7 +15,6 @@ const BookingForm = ({ spaces, bookings, timetable, onAddBooking }) => {
     start: "",
     end: "",
     participants: "",
-    equipment: [],
     notes: "",
   });
 
@@ -25,24 +24,8 @@ const BookingForm = ({ spaces, bookings, timetable, onAddBooking }) => {
     }
   }, [spaces, form.spaceId]);
 
-  const equipmentOptions = useMemo(() => {
-    const all = new Set();
-    spaces.forEach((space) => {
-      space.equipment.forEach((item) => all.add(item));
-    });
-    return Array.from(all);
-  }, [spaces]);
-
   const handleChange = (field) => (event) => {
     setForm((prev) => ({ ...prev, [field]: event.target.value }));
-  };
-
-  const toggleEquipment = (value) => {
-    setForm((prev) => {
-      const exists = prev.equipment.includes(value);
-      const updated = exists ? prev.equipment.filter((item) => item !== value) : [...prev.equipment, value];
-      return { ...prev, equipment: updated };
-    });
   };
 
   const validateBooking = () => {
@@ -67,13 +50,6 @@ const BookingForm = ({ spaces, bookings, timetable, onAddBooking }) => {
 
     if (selectedSpace && Number(form.participants) > selectedSpace.capacity) {
       issues.push("Participant count exceeds the selected space capacity.");
-    }
-
-    if (selectedSpace) {
-      const missingEquipment = form.equipment.filter((item) => !selectedSpace.equipment.includes(item));
-      if (missingEquipment.length) {
-        issues.push("Selected space does not support all requested equipment.");
-      }
     }
 
     if (form.start && form.end && form.start >= form.end) {
@@ -123,7 +99,6 @@ const BookingForm = ({ spaces, bookings, timetable, onAddBooking }) => {
       start: form.start,
       end: form.end,
       participants: Number(form.participants),
-      equipment: form.equipment,
       notes: form.notes,
       requestedBy: user?.name || "Campus User",
       requestedRole: role,
@@ -137,7 +112,6 @@ const BookingForm = ({ spaces, bookings, timetable, onAddBooking }) => {
       start: "",
       end: "",
       participants: "",
-      equipment: [],
       notes: "",
     });
     setErrors([]);
@@ -182,22 +156,7 @@ const BookingForm = ({ spaces, bookings, timetable, onAddBooking }) => {
       </div>
 
       <div style={{ marginTop: "16px" }}>
-        <div className="form-section">
-          <span className="section-title">Equipment Required</span>
-          <div className="checkbox-grid">
-            {equipmentOptions.map((item) => (
-              <label key={item} className="checkbox-pill">
-                <input
-                  type="checkbox"
-                  checked={form.equipment.includes(item)}
-                  onChange={() => toggleEquipment(item)}
-                />
-                <span>{item}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-        <label className="input-field" htmlFor="notes" style={{ marginTop: "12px" }}>
+        <label className="input-field" htmlFor="notes">
           <span>Additional Notes</span>
           <textarea id="notes" rows="3" value={form.notes} onChange={handleChange("notes")} />
         </label>

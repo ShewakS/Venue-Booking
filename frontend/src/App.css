@@ -93,6 +93,20 @@ body {
   z-index: 10;
 }
 
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.navbar-logo {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+}
+
 .main-area {
   display: flex;
   flex-direction: column;
@@ -344,6 +358,16 @@ body {
   border-radius: 8px;
   border: 1px solid var(--border);
   background: #f8fafc;
+}
+
+.slot-cell.interactive {
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.slot-cell.interactive:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.12);
 }
 
 .slot-cell.academic {

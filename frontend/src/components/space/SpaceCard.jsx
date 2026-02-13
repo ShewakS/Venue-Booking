@@ -1,20 +1,19 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import Button from "../common/Button";
+import { PATHS } from "../../utils/routePaths";
 
 const SpaceCard = ({ space }) => {
+  const navigate = useNavigate();
+
   return (
     <div className="card">
       <h4>{space.name}</h4>
       <p style={{ color: "#5b6475" }}>{space.type}</p>
       <p>Capacity: {space.capacity}</p>
-      <div className="chip-row">
-        {space.equipment.map((item) => (
-          <span key={item} className="chip">
-            {item}
-          </span>
-        ))}
-      </div>
-      <Button className="secondary">View Availability</Button>
+      <Button className="secondary" onClick={() => navigate(PATHS.CALENDAR)}>
+        View Availability
+      </Button>
     </div>
   );
 };

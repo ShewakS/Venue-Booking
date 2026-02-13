@@ -167,10 +167,6 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      <div className="card">
-        <h3>Booking Requests</h3>
-        <BookingList bookings={bookings} spaces={spaces} onStatusChange={updateBookingStatus} showActions />
-      </div>
     </div>
   );
 };

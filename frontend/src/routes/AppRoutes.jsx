@@ -3,7 +3,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import Login from "../pages/Login";
 import AdminDashboard from "../pages/AdminDashboard";
 import FacultyDashboard from "../pages/FacultyDashboard";
-import StudentCoordinatorDashboard from "../pages/StudentCoordinatorDashboard";
+import StudentDashboard from "../pages/StudentDashboard";
 import BookingPage from "../pages/BookingPage";
 import SpacePage from "../pages/SpacePage";
 import CalendarPage from "../pages/CalendarPage";
@@ -42,7 +42,7 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute allowedRoles={[ROLES.COORDINATOR]}>
             <DashboardLayout>
-              <StudentCoordinatorDashboard />
+              <StudentDashboard />
             </DashboardLayout>
           </ProtectedRoute>
         }

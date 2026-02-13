@@ -7,6 +7,13 @@ const SpaceCard = ({ space }) => {
       <h4>{space.name}</h4>
       <p style={{ color: "#5b6475" }}>{space.type}</p>
       <p>Capacity: {space.capacity}</p>
+      <div className="chip-row">
+        {space.equipment.map((item) => (
+          <span key={item} className="chip">
+            {item}
+          </span>
+        ))}
+      </div>
       <Button className="secondary">View Availability</Button>
     </div>
   );

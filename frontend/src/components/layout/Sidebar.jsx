@@ -21,7 +21,11 @@ const Sidebar = () => {
         {links
           .filter((link) => link.roles.includes(role))
           .map((link) => (
-            <NavLink key={link.path} to={link.path} className="sidebar-link">
+            <NavLink
+              key={link.path}
+              to={link.path}
+              className={({ isActive }) => `sidebar-link${isActive ? " active" : ""}`}
+            >
               {link.label}
             </NavLink>
           ))}

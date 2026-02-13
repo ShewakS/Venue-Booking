@@ -11,6 +11,7 @@ const TopNavbar = () => {
         <strong>Space Booking & Allocation</strong>
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        <span className="role-pill">{user?.role || "guest"}</span>
         <span>{user?.name || "Guest"}</span>
         <Button className="secondary" onClick={logout}>
           Logout

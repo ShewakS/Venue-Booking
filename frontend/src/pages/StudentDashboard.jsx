@@ -5,42 +5,34 @@ import SpaceList from "../components/space/SpaceList";
 import BookingForm from "../components/booking/BookingForm";
 import BookingList from "../components/booking/BookingList";
 
-const FacultyDashboard = () => {
+const StudentDashboard = () => {
   const { user } = useAuth();
-  const { spaces, bookings, timetable, addBooking, updateBookingStatus } = useData();
+  const { spaces, bookings, timetable, addBooking } = useData();
 
   const myBookings = bookings.filter((booking) => booking.requestedBy === user?.name);
-  const studentRequests = bookings.filter((booking) => booking.requestedRole === "coordinator");
 
   return (
     <div style={{ display: "grid", gap: "16px" }}>
-      <h2>Faculty Dashboard</h2>
+      <h2>Student Coordinator Dashboard</h2>
       <div className="card-grid">
         <div className="card">
-          <h4>Your Bookings</h4>
+          <h4>Active Requests</h4>
           <p>{myBookings.length}</p>
-        </div>
-        <div className="card">
-          <h4>Approved Requests</h4>
-          <p>{myBookings.filter((booking) => booking.status === "Approved").length}</p>
         </div>
         <div className="card">
           <h4>Spaces Available</h4>
           <p>{spaces.length}</p>
         </div>
+        <div className="card">
+          <h4>Academic Blocks</h4>
+          <p>{timetable.length}</p>
+        </div>
       </div>
-
       <SpaceList spaces={spaces} />
       <BookingForm spaces={spaces} bookings={bookings} timetable={timetable} onAddBooking={addBooking} />
       <BookingList bookings={myBookings} spaces={spaces} />
-      <BookingList
-        bookings={studentRequests}
-        spaces={spaces}
-        onStatusChange={updateBookingStatus}
-        showActions
-      />
     </div>
   );
 };
 
-export default FacultyDashboard;
+export default StudentDashboard;

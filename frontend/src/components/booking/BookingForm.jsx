@@ -15,6 +15,7 @@ const BookingForm = ({ spaces, bookings, timetable, onAddBooking }) => {
     start: "",
     end: "",
     participants: "",
+    organizedBy: "",
     notes: "",
   });
 
@@ -99,6 +100,7 @@ const BookingForm = ({ spaces, bookings, timetable, onAddBooking }) => {
       start: form.start,
       end: form.end,
       participants: Number(form.participants),
+      organizedBy: form.organizedBy,
       notes: form.notes,
       requestedBy: user?.name || "Campus User",
       requestedRole: role,
@@ -112,6 +114,7 @@ const BookingForm = ({ spaces, bookings, timetable, onAddBooking }) => {
       start: "",
       end: "",
       participants: "",
+      organizedBy: "",
       notes: "",
     });
     setErrors([]);
@@ -152,6 +155,12 @@ const BookingForm = ({ spaces, bookings, timetable, onAddBooking }) => {
           min="1"
           value={form.participants}
           onChange={handleChange("participants")}
+        />
+        <InputField
+          id="organizedBy"
+          label="Organized By"
+          value={form.organizedBy}
+          onChange={handleChange("organizedBy")}
         />
       </div>
 

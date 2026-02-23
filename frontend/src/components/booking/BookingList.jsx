@@ -16,6 +16,7 @@ const BookingList = ({ bookings, spaces, onStatusChange, showActions = false }) 
             <th>Date</th>
             <th>Time</th>
             <th>Participants</th>
+            <th>Organized By</th>
             <th>Status</th>
             {showActions ? <th>Actions</th> : null}
           </tr>
@@ -33,6 +34,7 @@ const BookingList = ({ bookings, spaces, onStatusChange, showActions = false }) 
                 {booking.start} - {booking.end}
               </td>
               <td>{booking.participants}</td>
+              <td>{booking.organizedBy || "-"}</td>
               <td>
                 <StatusBadge status={booking.status} />
               </td>

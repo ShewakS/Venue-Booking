@@ -5,7 +5,11 @@ import { roleHomePath } from "../utils/roles";
 import { PATHS } from "../utils/routePaths";
 
 const ProtectedRoute = ({ allowedRoles, children }) => {
-  const { isAuthenticated, role } = useAuth();
+  const { isAuthenticated, role, isAuthReady } = useAuth();
+
+  if (!isAuthReady) {
+    return null;
+  }
 
   if (!isAuthenticated) {
     return <Navigate to={PATHS.LOGIN} replace />;

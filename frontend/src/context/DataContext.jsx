@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { mockBookings, mockSpaces, mockTimetable } from "../utils/mockData";
+import api from "../services/api";
 
 const DataContext = createContext(null);
 
@@ -9,38 +9,96 @@ export const DataProvider = ({ children }) => {
   const [timetable, setTimetable] = useState([]);
   const [timetableOverrides, setTimetableOverrides] = useState([]);
 
+  const loadSpaces = async () => {
+    try {
+      const response = await api.get("/spaces");
+      setSpaces(response?.data?.data || []);
+    } catch {
+      setSpaces([]);
+    }
+  };
+
+  const loadBookings = async () => {
+    try {
+      const response = await api.get("/bookings");
+      setBookings(response?.data?.data || []);
+    } catch {
+      setBookings([]);
+    }
+  };
+
   useEffect(() => {
-    setSpaces(mockSpaces);
-    setBookings(mockBookings);
-    setTimetable(mockTimetable);
+    loadSpaces();
+    loadBookings();
+    setTimetable([]);
   }, []);
 
-  const addSpace = (space) => {
-    setSpaces((prev) => [...prev, { ...space, id: Date.now() }]);
+  const addSpace = async (space) => {
+    try {
+      const response = await api.post("/spaces", space);
+      const created = response?.data?.data;
+      if (created) {
+        setSpaces((prev) => [...prev, created]);
+      }
+      return created;
+    } catch {
+      return null;
+    }
   };
 
-  const updateSpace = (space) => {
-    setSpaces((prev) => prev.map((item) => (item.id === space.id ? space : item)));
+  const updateSpace = async (space) => {
+    try {
+      const response = await api.put(`/spaces/${space.id}`, space);
+      const updated = response?.data?.data;
+
+      if (updated) {
+        setSpaces((prev) => prev.map((item) => (item.id === updated.id ? updated : item)));
+      }
+
+      return updated;
+    } catch {
+      return null;
+    }
   };
 
-  const deleteSpace = (id) => {
-    setSpaces((prev) => prev.filter((space) => space.id !== id));
-    setBookings((prev) => prev.filter((booking) => booking.spaceId !== id));
+  const deleteSpace = async (id) => {
+    try {
+      await api.delete(`/spaces/${id}`);
+      setSpaces((prev) => prev.filter((space) => space.id !== id));
+      setBookings((prev) => prev.filter((booking) => booking.spaceId !== id));
+    } catch {
+      return;
+    }
   };
 
-  const addBooking = (booking) => {
-    setBookings((prev) => [
-      ...prev,
-      {
-        ...booking,
-        id: Date.now(),
-        status: "Pending",
-      },
-    ]);
+  const addBooking = async (booking) => {
+    try {
+      const response = await api.post("/bookings", booking);
+      const created = response?.data?.data;
+
+      if (created) {
+        setBookings((prev) => [...prev, created]);
+      }
+
+      return created;
+    } catch {
+      return null;
+    }
   };
 
-  const updateBookingStatus = (id, status) => {
-    setBookings((prev) => prev.map((booking) => (booking.id === id ? { ...booking, status } : booking)));
+  const updateBookingStatus = async (id, status) => {
+    try {
+      const response = await api.patch(`/bookings/${id}/status`, { status });
+      const updated = response?.data?.data;
+
+      if (updated) {
+        setBookings((prev) => prev.map((booking) => (booking.id === id ? updated : booking)));
+      }
+
+      return updated;
+    } catch {
+      return null;
+    }
   };
 
   const value = useMemo(

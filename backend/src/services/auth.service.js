@@ -1,46 +1,38 @@
+const jwt = require("jsonwebtoken");
 const ApiError = require("../utils/ApiError");
+const env = require("../config/env");
+const User = require("../models/User");
 const { validateLogin, validateRegister } = require("../validators/auth.validator");
-const { dataStore, nextId } = require("./store");
 
 const sanitizeUser = (user) => {
-	const { password, ...safeUser } = user;
+	const document = user.toJSON ? user.toJSON() : user;
+	const { password, ...safeUser } = document;
 	return safeUser;
 };
 
-const createToken = (user) => {
-	const payload = JSON.stringify({
-		sub: user.id,
-		role: user.role,
-		name: user.name,
-		iat: Date.now(),
+const createToken = (user) =>
+	jwt.sign({ sub: String(user._id), role: user.role, name: user.name }, env.jwtSecret, {
+		expiresIn: env.jwtExpiresIn,
 	});
 
-	return Buffer.from(payload).toString("base64url");
-};
-
-const login = (payload = {}) => {
+const login = async (payload = {}) => {
 	const { isValid, errors, value } = validateLogin(payload);
 	if (!isValid) {
 		throw ApiError.badRequest("Invalid login payload", errors);
 	}
 
-	const existingUser = dataStore.users.find(
-		(user) => user.name.toLowerCase() === value.name.toLowerCase() && user.role === value.role
-	);
+	let user = await User.findOne({
+		name: new RegExp(`^${value.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i"),
+		role: value.role,
+	});
 
-	const user =
-		existingUser ||
-		{
-			id: nextId("user"),
+	if (!user) {
+		user = await User.create({
 			name: value.name,
+			role: value.role,
 			email: "",
 			password: "",
-			role: value.role,
-			createdAt: new Date().toISOString(),
-		};
-
-	if (!existingUser) {
-		dataStore.users.push(user);
+		});
 	}
 
 	return {
@@ -49,27 +41,23 @@ const login = (payload = {}) => {
 	};
 };
 
-const register = (payload = {}) => {
+const register = async (payload = {}) => {
 	const { isValid, errors, value } = validateRegister(payload);
 	if (!isValid) {
 		throw ApiError.badRequest("Invalid registration payload", errors);
 	}
 
-	const emailInUse = dataStore.users.some((user) => user.email.toLowerCase() === value.email);
+	const emailInUse = await User.exists({ email: value.email });
 	if (emailInUse) {
 		throw ApiError.conflict("Email is already in use");
 	}
 
-	const user = {
-		id: nextId("user"),
+	const user = await User.create({
 		name: value.name,
 		email: value.email,
 		password: value.password,
 		role: value.role,
-		createdAt: new Date().toISOString(),
-	};
-
-	dataStore.users.push(user);
+	});
 
 	return {
 		token: createToken(user),
@@ -77,9 +65,8 @@ const register = (payload = {}) => {
 	};
 };
 
-const getCurrentUser = (userId) => {
-	const id = Number(userId);
-	const user = dataStore.users.find((item) => item.id === id);
+const getCurrentUser = async (userId) => {
+	const user = await User.findById(userId);
 
 	if (!user) {
 		throw ApiError.notFound("User not found");
@@ -88,9 +75,18 @@ const getCurrentUser = (userId) => {
 	return sanitizeUser(user);
 };
 
+const verifyToken = (token) => {
+	try {
+		return jwt.verify(token, env.jwtSecret);
+	} catch (error) {
+		throw ApiError.unauthorized("Invalid or expired token");
+	}
+};
+
 module.exports = {
 	login,
 	register,
 	getCurrentUser,
+	verifyToken,
 };
 

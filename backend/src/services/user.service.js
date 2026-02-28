@@ -1,26 +1,26 @@
 const ApiError = require("../utils/ApiError");
 const { USER_ROLES } = require("../validators/auth.validator");
-const { dataStore } = require("./store");
+const User = require("../models/User");
 
 const sanitizeUser = (user) => {
-	const { password, ...safeUser } = user;
+	const document = user.toJSON ? user.toJSON() : user;
+	const { password, ...safeUser } = document;
 	return safeUser;
 };
 
-const listUsers = (query = {}) => {
+const listUsers = async (query = {}) => {
 	const role = typeof query.role === "string" ? query.role.trim().toLowerCase() : "";
 
 	if (role && !USER_ROLES.includes(role)) {
 		throw ApiError.badRequest(`role must be one of: ${USER_ROLES.join(", ")}`);
 	}
 
-	const users = role ? dataStore.users.filter((user) => user.role === role) : dataStore.users;
+	const users = role ? await User.find({ role }).sort({ createdAt: -1 }) : await User.find().sort({ createdAt: -1 });
 	return users.map(sanitizeUser);
 };
 
-const getUserById = (userId) => {
-	const id = Number(userId);
-	const user = dataStore.users.find((item) => item.id === id);
+const getUserById = async (userId) => {
+	const user = await User.findById(userId);
 
 	if (!user) {
 		throw ApiError.notFound("User not found");
@@ -29,11 +29,10 @@ const getUserById = (userId) => {
 	return sanitizeUser(user);
 };
 
-const updateUser = (userId, payload = {}) => {
-	const id = Number(userId);
-	const index = dataStore.users.findIndex((user) => user.id === id);
+const updateUser = async (userId, payload = {}) => {
+	const existing = await User.findById(userId);
 
-	if (index === -1) {
+	if (!existing) {
 		throw ApiError.notFound("User not found");
 	}
 
@@ -52,26 +51,25 @@ const updateUser = (userId, payload = {}) => {
 		throw ApiError.badRequest(`role must be one of: ${USER_ROLES.join(", ")}`);
 	}
 
-	const updated = {
-		...dataStore.users[index],
-		...(name !== undefined ? { name } : {}),
-		...(role !== undefined ? { role } : {}),
-		updatedAt: new Date().toISOString(),
-	};
+	const updated = await User.findByIdAndUpdate(
+		userId,
+		{
+			...(name !== undefined ? { name } : {}),
+			...(role !== undefined ? { role } : {}),
+		},
+		{ new: true, runValidators: true }
+	);
 
-	dataStore.users[index] = updated;
 	return sanitizeUser(updated);
 };
 
-const deleteUser = (userId) => {
-	const id = Number(userId);
-	const index = dataStore.users.findIndex((user) => user.id === id);
+const deleteUser = async (userId) => {
+	const removed = await User.findByIdAndDelete(userId);
 
-	if (index === -1) {
+	if (!removed) {
 		throw ApiError.notFound("User not found");
 	}
 
-	const [removed] = dataStore.users.splice(index, 1);
 	return sanitizeUser(removed);
 };
 

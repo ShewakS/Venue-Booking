@@ -18,6 +18,7 @@ const AdminDashboard = () => {
   } = useData();
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState({ name: "", type: "", capacity: "" });
+  const [formError, setFormError] = useState("");
 
   const totals = useMemo(
     () => ({
@@ -42,8 +43,10 @@ const AdminDashboard = () => {
     });
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
+    setFormError("");
+
     const payload = {
       id: editingId,
       name: form.name.trim(),
@@ -53,14 +56,22 @@ const AdminDashboard = () => {
     };
 
     if (!payload.name || !payload.type || !payload.capacity) {
+      setFormError("Please enter valid space details.");
       return;
     }
 
+    let saved = null;
     if (editingId) {
-      updateSpace(payload);
+      saved = await updateSpace(payload);
     } else {
-      addSpace(payload);
+      saved = await addSpace(payload);
     }
+
+    if (!saved) {
+      setFormError("Unable to save space. Please try again.");
+      return;
+    }
+
     resetForm();
   };
 
@@ -122,6 +133,7 @@ const AdminDashboard = () => {
                 </Button>
               ) : null}
             </div>
+            {formError ? <p style={{ color: "#c62828", margin: 0 }}>{formError}</p> : null}
           </form>
         </div>
 
@@ -154,7 +166,9 @@ const AdminDashboard = () => {
                     </Button>
                     <Button
                       className="secondary"
-                      onClick={() => deleteSpace(space.id)}
+                      onClick={async () => {
+                        await deleteSpace(space.id);
+                      }}
                       style={{ padding: "6px 10px", fontSize: "12px" }}
                     >
                       Delete

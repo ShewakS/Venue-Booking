@@ -1,39 +1,45 @@
 const ApiError = require("../utils/ApiError");
+const Booking = require("../models/Booking");
+const Space = require("../models/Space");
 const {
 	validateCreateBooking,
 	validateBookingQuery,
 	validateBookingStatusUpdate,
 } = require("../validators/booking.validator");
-const { dataStore, nextId } = require("./store");
 
 const hasOverlap = (startA, endA, startB, endB) => startA < endB && startB < endA;
 
-const listBookings = (query = {}) => {
+const getNextBookingLegacyId = async () => {
+	const latest = await Booking.findOne().sort({ legacyId: -1 }).select("legacyId").lean();
+	return latest?.legacyId ? latest.legacyId + 1 : 101;
+};
+
+const listBookings = async (query = {}) => {
 	const { isValid, errors, value } = validateBookingQuery(query);
 	if (!isValid) {
 		throw ApiError.badRequest("Invalid booking query", errors);
 	}
 
-	return dataStore.bookings.filter((booking) => {
-		if (value.spaceId !== undefined && booking.spaceId !== value.spaceId) {
-			return false;
-		}
+	const mongoQuery = {};
 
-		if (value.status && booking.status !== value.status) {
-			return false;
-		}
+	if (value.spaceId !== undefined) {
+		mongoQuery.spaceId = value.spaceId;
+	}
 
-		if (value.date && booking.date !== value.date) {
-			return false;
-		}
+	if (value.status) {
+		mongoQuery.status = value.status;
+	}
 
-		return true;
-	});
+	if (value.date) {
+		mongoQuery.date = value.date;
+	}
+
+	return Booking.find(mongoQuery).sort({ legacyId: -1 });
 };
 
-const getBookingById = (bookingId) => {
+const getBookingById = async (bookingId) => {
 	const id = Number(bookingId);
-	const booking = dataStore.bookings.find((item) => item.id === id);
+	const booking = await Booking.findOne({ legacyId: id });
 
 	if (!booking) {
 		throw ApiError.notFound("Booking not found");
@@ -42,13 +48,13 @@ const getBookingById = (bookingId) => {
 	return booking;
 };
 
-const createBooking = (payload = {}) => {
+const createBooking = async (payload = {}) => {
 	const { isValid, errors, value } = validateCreateBooking(payload);
 	if (!isValid) {
 		throw ApiError.badRequest("Invalid booking payload", errors);
 	}
 
-	const space = dataStore.spaces.find((item) => item.id === value.spaceId);
+	const space = await Space.findOne({ legacyId: value.spaceId });
 	if (!space) {
 		throw ApiError.notFound("Space not found");
 	}
@@ -57,7 +63,13 @@ const createBooking = (payload = {}) => {
 		throw ApiError.badRequest("Participant count exceeds selected space capacity");
 	}
 
-	const conflict = dataStore.bookings.find((booking) => {
+	const sameDayBookings = await Booking.find({
+		spaceId: value.spaceId,
+		date: value.date,
+		status: { $ne: "Rejected" },
+	});
+
+	const conflict = sameDayBookings.find((booking) => {
 		if (booking.status === "Rejected") {
 			return false;
 		}
@@ -73,21 +85,14 @@ const createBooking = (payload = {}) => {
 		throw ApiError.conflict("Selected time overlaps with an existing booking");
 	}
 
-	const booking = {
-		id: nextId("booking"),
-		...value,
-		createdAt: new Date().toISOString(),
-	};
-
-	dataStore.bookings.push(booking);
-	return booking;
+	const legacyId = await getNextBookingLegacyId();
+	return Booking.create({ ...value, legacyId, spaceId: space.legacyId });
 };
 
-const updateBookingStatus = (bookingId, payload = {}) => {
+const updateBookingStatus = async (bookingId, payload = {}) => {
 	const id = Number(bookingId);
-	const bookingIndex = dataStore.bookings.findIndex((booking) => booking.id === id);
-
-	if (bookingIndex === -1) {
+	const existing = await Booking.findOne({ legacyId: id });
+	if (!existing) {
 		throw ApiError.notFound("Booking not found");
 	}
 
@@ -96,25 +101,23 @@ const updateBookingStatus = (bookingId, payload = {}) => {
 		throw ApiError.badRequest("Invalid status payload", errors);
 	}
 
-	const updatedBooking = {
-		...dataStore.bookings[bookingIndex],
-		status: value.status,
-		updatedAt: new Date().toISOString(),
-	};
+	const updatedBooking = await Booking.findByIdAndUpdate(
+		existing._id,
+		{ status: value.status },
+		{ new: true, runValidators: true }
+	);
 
-	dataStore.bookings[bookingIndex] = updatedBooking;
 	return updatedBooking;
 };
 
-const deleteBooking = (bookingId) => {
+const deleteBooking = async (bookingId) => {
 	const id = Number(bookingId);
-	const bookingIndex = dataStore.bookings.findIndex((booking) => booking.id === id);
+	const removed = await Booking.findOneAndDelete({ legacyId: id });
 
-	if (bookingIndex === -1) {
+	if (!removed) {
 		throw ApiError.notFound("Booking not found");
 	}
 
-	const [removed] = dataStore.bookings.splice(bookingIndex, 1);
 	return removed;
 };
 

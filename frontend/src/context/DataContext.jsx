@@ -37,8 +37,8 @@ export const DataProvider = ({ children }) => {
     try {
       const response = await api.post("/spaces", space);
       const created = response?.data?.data;
-      if (created) {
-        setSpaces((prev) => [...prev, created]);
+      if (created?.id) {
+        await loadSpaces();
       }
       return created;
     } catch {
@@ -51,8 +51,8 @@ export const DataProvider = ({ children }) => {
       const response = await api.put(`/spaces/${space.id}`, space);
       const updated = response?.data?.data;
 
-      if (updated) {
-        setSpaces((prev) => prev.map((item) => (item.id === updated.id ? updated : item)));
+      if (updated?.id) {
+        await loadSpaces();
       }
 
       return updated;
@@ -64,8 +64,8 @@ export const DataProvider = ({ children }) => {
   const deleteSpace = async (id) => {
     try {
       await api.delete(`/spaces/${id}`);
-      setSpaces((prev) => prev.filter((space) => space.id !== id));
-      setBookings((prev) => prev.filter((booking) => booking.spaceId !== id));
+      await loadSpaces();
+      await loadBookings();
     } catch {
       return;
     }
@@ -76,8 +76,8 @@ export const DataProvider = ({ children }) => {
       const response = await api.post("/bookings", booking);
       const created = response?.data?.data;
 
-      if (created) {
-        setBookings((prev) => [...prev, created]);
+      if (created?.id) {
+        await loadBookings();
       }
 
       return created;
@@ -91,8 +91,8 @@ export const DataProvider = ({ children }) => {
       const response = await api.patch(`/bookings/${id}/status`, { status });
       const updated = response?.data?.data;
 
-      if (updated) {
-        setBookings((prev) => prev.map((booking) => (booking.id === id ? updated : booking)));
+      if (updated?.id) {
+        await loadBookings();
       }
 
       return updated;

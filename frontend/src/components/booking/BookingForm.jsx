@@ -84,7 +84,7 @@ const BookingForm = ({ spaces, bookings, timetable, onAddBooking }) => {
     return issues;
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const issues = validateBooking();
     setErrors(issues);
@@ -92,7 +92,7 @@ const BookingForm = ({ spaces, bookings, timetable, onAddBooking }) => {
       return;
     }
 
-    onAddBooking({
+    const created = await onAddBooking({
       title: form.title,
       type: form.type,
       spaceId: Number(form.spaceId),
@@ -105,6 +105,11 @@ const BookingForm = ({ spaces, bookings, timetable, onAddBooking }) => {
       requestedBy: user?.name || "Campus User",
       requestedRole: role,
     });
+
+    if (!created) {
+      setErrors(["Unable to save booking. Please try again."]);
+      return;
+    }
 
     setForm({
       title: "",

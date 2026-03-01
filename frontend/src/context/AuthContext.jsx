@@ -28,15 +28,32 @@ export const AuthProvider = ({ children }) => {
     }
   }, [user]);
 
-  const login = async ({ name, role }) => {
-    const response = await api.post("/auth/login", { name, role });
+  const login = async ({ email, password }) => {
+    const response = await api.post("/auth/login", { email, password });
     const payload = response?.data?.data || {};
 
     if (payload.token) {
       localStorage.setItem(authTokenKey, payload.token);
     }
 
-    setUser(payload.user || { name: name || "Campus User", role });
+    if (payload.user) {
+      setUser(payload.user);
+    }
+
+    return payload.user;
+  };
+
+  const register = async ({ name, email, password, role }) => {
+    const response = await api.post("/auth/register", { name, email, password, role });
+    const payload = response?.data?.data || {};
+
+    if (payload.token) {
+      localStorage.setItem(authTokenKey, payload.token);
+    }
+
+    if (payload.user) {
+      setUser(payload.user);
+    }
 
     return payload.user;
   };
@@ -53,6 +70,7 @@ export const AuthProvider = ({ children }) => {
       isAuthenticated: Boolean(user),
       isAuthReady,
       login,
+      register,
       logout,
     }),
     [isAuthReady, user]

@@ -7,25 +7,25 @@ const isNonEmptyString = (value) => typeof value === "string" && value.trim().le
 const validateLogin = (payload = {}) => {
 	const errors = [];
 
-	const name = asString(payload.name);
-	const role = asString(payload.role).toLowerCase();
+	const email = asString(payload.email).toLowerCase();
+	const password = typeof payload.password === "string" ? payload.password : "";
 
-	if (name && name.length > 80) {
-		errors.push("name must be at most 80 characters long");
+	if (!email) {
+		errors.push("email is required");
+	} else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+		errors.push("email must be a valid email address");
 	}
 
-	if (!isNonEmptyString(payload.role)) {
-		errors.push("role is required");
-	} else if (!USER_ROLES.includes(role)) {
-		errors.push(`role must be one of: ${USER_ROLES.join(", ")}`);
+	if (!password) {
+		errors.push("password is required");
 	}
 
 	return {
 		isValid: errors.length === 0,
 		errors,
 		value: {
-			name: name || "Campus User",
-			role,
+			email,
+			password,
 		},
 	};
 };

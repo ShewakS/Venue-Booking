@@ -21,18 +21,13 @@ const login = async (payload = {}) => {
 		throw ApiError.badRequest("Invalid login payload", errors);
 	}
 
-	let user = await User.findOne({
-		name: new RegExp(`^${value.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i"),
-		role: value.role,
-	});
-
+	const user = await User.findOne({ email: value.email });
 	if (!user) {
-		user = await User.create({
-			name: value.name,
-			role: value.role,
-			email: "",
-			password: "",
-		});
+		throw ApiError.unauthorized("Account not found. Please register first.");
+	}
+
+	if (user.password !== value.password) {
+		throw ApiError.unauthorized("Invalid email or password");
 	}
 
 	return {

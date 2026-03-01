@@ -1,9 +1,12 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
 const env = require("./env");
 const logger = require("../utils/logger");
 const User = require("../models/User");
 const Space = require("../models/Space");
 const Booking = require("../models/Booking");
+
+const SALT_ROUNDS = 10;
 
 const seedDatabase = async () => {
 	const spaceCount = await Space.countDocuments();
@@ -11,13 +14,15 @@ const seedDatabase = async () => {
 		return;
 	}
 
+	const defaultPasswordHash = await bcrypt.hash("password123", SALT_ROUNDS);
+
 	await User.insertMany([
-		{ name: "Event Organizer", email: "organizer@venue.local", password: "password123", role: "admin" },
-		{ name: "Faculty User", email: "faculty@venue.local", password: "password123", role: "faculty" },
+		{ name: "Event Organizer", email: "organizer@venue.local", password: defaultPasswordHash, role: "admin" },
+		{ name: "Faculty User", email: "faculty@venue.local", password: defaultPasswordHash, role: "faculty" },
 		{
 			name: "Student Coordinator",
 			email: "coordinator@venue.local",
-			password: "password123",
+			password: defaultPasswordHash,
 			role: "coordinator",
 		},
 	]);

@@ -1,8 +1,12 @@
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const ApiError = require("../utils/ApiError");
 const env = require("../config/env");
 const User = require("../models/User");
 const { validateLogin, validateRegister } = require("../validators/auth.validator");
+
+const SALT_ROUNDS = 10;
+const isBcryptHash = (value) => typeof value === "string" && /^\$2[aby]\$\d{2}\$/.test(value);
 
 const sanitizeUser = (user) => {
 	const document = user.toJSON ? user.toJSON() : user;
@@ -26,7 +30,20 @@ const login = async (payload = {}) => {
 		throw ApiError.unauthorized("Account not found. Please register first.");
 	}
 
-	if (user.password !== value.password) {
+	let isPasswordValid = false;
+
+	if (isBcryptHash(user.password)) {
+		isPasswordValid = await bcrypt.compare(value.password, user.password);
+	} else {
+		isPasswordValid = user.password === value.password;
+
+		if (isPasswordValid) {
+			user.password = await bcrypt.hash(value.password, SALT_ROUNDS);
+			await user.save();
+		}
+	}
+
+	if (!isPasswordValid) {
 		throw ApiError.unauthorized("Invalid email or password");
 	}
 
@@ -47,10 +64,12 @@ const register = async (payload = {}) => {
 		throw ApiError.conflict("Email is already in use");
 	}
 
+	const hashedPassword = await bcrypt.hash(value.password, SALT_ROUNDS);
+
 	const user = await User.create({
 		name: value.name,
 		email: value.email,
-		password: value.password,
+		password: hashedPassword,
 		role: value.role,
 	});
 

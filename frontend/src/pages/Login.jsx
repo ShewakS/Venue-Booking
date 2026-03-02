@@ -98,7 +98,7 @@ const Login = () => {
               setMode((prev) => (prev === "login" ? "register" : "login"));
             }}
           >
-            {mode === "login" ? "First time user? Register" : "Already registered? Login"}
+            {mode === "login" ?  "Register" : "Login"}
           </Button>
         </div>
       </form>

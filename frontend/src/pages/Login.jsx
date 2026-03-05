@@ -44,15 +44,15 @@ const Login = () => {
   };
 
   return (
-    <div style={{ display: "grid", placeItems: "center", minHeight: "100vh" }}>
-      <form className="card" style={{ width: "360px" }} onSubmit={handleSubmit}>
+    <div className="login-shell">
+      <form className="card login-card" onSubmit={handleSubmit}>
         <h2>{mode === "register" ? "Create Account" : "Smart Campus Login"}</h2>
         <div style={{ display: "grid", gap: "12px" }}>
           {mode === "register" ? (
             <InputField
               id="name"
               label="Name"
-              placeholder="Alex Johnson"
+              placeholder="Enter your name"
               value={name}
               onChange={(event) => setName(event.target.value)}
             />
@@ -62,7 +62,7 @@ const Login = () => {
             id="email"
             label="Email"
             type="email"
-            placeholder="you@example.com"
+            placeholder="Enter your email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
           />

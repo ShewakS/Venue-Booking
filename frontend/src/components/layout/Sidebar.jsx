@@ -2,10 +2,30 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { PATHS } from "../../utils/routePaths";
-import { ROLES, roleHomePath } from "../../utils/roles";
+import { ROLE_LABELS, ROLES, roleHomePath } from "../../utils/roles";
 
 const Sidebar = () => {
   const { role } = useAuth();
+
+  const roleHeader = {
+    [ROLES.ADMIN]: {
+      title: "Organizer Portal",
+      subtitle: "Venue Operations",
+    },
+    [ROLES.FACULTY]: {
+      title: "Faculty Portal",
+      subtitle: "Booking Requests",
+    },
+    [ROLES.COORDINATOR]: {
+      title: "Coordinator Portal",
+      subtitle: "Campus Events",
+    },
+  };
+
+  const header = roleHeader[role] || {
+    title: "Smart Campus Portal",
+    subtitle: "Venue Management",
+  };
 
   const links = [
     { label: "Dashboard", path: roleHomePath(role), roles: [ROLES.ADMIN, ROLES.FACULTY, ROLES.COORDINATOR] },
@@ -16,7 +36,10 @@ const Sidebar = () => {
 
   return (
     <aside className="sidebar">
-      <div className="sidebar-brand">Smart Campus</div>
+      <div className="sidebar-header">
+        <div className="sidebar-brand">{header.title}</div>
+        <p className="sidebar-subtitle">{header.subtitle}</p>
+      </div>
       <nav className="sidebar-nav">
         {links
           .filter((link) => link.roles.includes(role))
@@ -30,6 +53,13 @@ const Sidebar = () => {
             </NavLink>
           ))}
       </nav>
+
+      <div className="sidebar-help">
+        <p className="sidebar-help-title">Need help?</p>
+        <p className="sidebar-help-text">Contact support for booking issues.</p>
+      </div>
+
+      <div className="sidebar-role">{ROLE_LABELS[role] || "Guest"}</div>
     </aside>
   );
 };

@@ -11,7 +11,6 @@ const StudentDashboard = () => {
 
   return (
     <div style={{ display: "grid", gap: "16px" }}>
-      <h2>Student Coordinator Dashboard</h2>
       <div className="card-grid">
         <div className="card">
           <h4>Active Requests</h4>

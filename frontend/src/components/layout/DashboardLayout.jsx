@@ -1,15 +1,17 @@
 import React from "react";
 import TopNavbar from "./TopNavbar";
+import Sidebar from "./Sidebar";
 import Particles from "../common/Particles";
 
 const DashboardLayout = ({ children }) => {
   return (
     <div className="app-shell">
+      <Sidebar />
       <div className="main-area">
         <div className="dashboard-particles">
           <Particles
             particleColors={["#ffffff"]}
-            particleCount={200}
+            particleCount={2000}
             particleSpread={10}
             speed={0.1}
             particleBaseSize={100}

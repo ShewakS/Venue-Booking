@@ -1,8 +1,21 @@
-const BOOKING_TYPES = ["Seminar", "Lab", "Club", "Workshop", "Lecture"];
+const BOOKING_TYPES = ["Seminar", "Club", "Workshop", "Hackathon", "Training"];
 const BOOKING_STATUSES = ["Pending", "Approved", "Rejected"];
 
 const asString = (value) => (typeof value === "string" ? value.trim() : "");
 const asNumber = (value) => (typeof value === "number" ? value : Number(value));
+
+const normalizeRequestedRole = (value) => {
+	const raw = asString(value).toLowerCase();
+
+	if (!raw) return "";
+	if (raw === "admin" || raw === "event organizer") return "admin";
+	if (raw === "faculty") return "faculty";
+	if (raw === "coordinator" || raw === "student coordinator" || raw === "event coordinator") {
+		return "coordinator";
+	}
+
+	return "";
+};
 
 const isValidDate = (value) => /^\d{4}-\d{2}-\d{2}$/.test(value);
 const isValidTime = (value) => /^([01]\d|2[0-3]):([0-5]\d)$/.test(value);
@@ -20,7 +33,8 @@ const validateCreateBooking = (payload = {}) => {
 	const organizedBy = asString(payload.organizedBy);
 	const notes = asString(payload.notes);
 	const requestedBy = asString(payload.requestedBy);
-	const requestedRole = asString(payload.requestedRole).toLowerCase();
+	const requestedRoleRaw = asString(payload.requestedRole);
+	const requestedRole = normalizeRequestedRole(payload.requestedRole);
 
 	if (!title) {
 		errors.push("title is required");
@@ -68,6 +82,10 @@ const validateCreateBooking = (payload = {}) => {
 
 	if (requestedBy && requestedBy.length > 80) {
 		errors.push("requestedBy must be at most 80 characters long");
+	}
+
+	if (requestedRoleRaw && !requestedRole) {
+		errors.push("requestedRole must be one of: admin, faculty, coordinator");
 	}
 
 	return {

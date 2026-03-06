@@ -1,51 +1,58 @@
+const { Op } = require("sequelize");
 const ApiError = require("../utils/ApiError");
-const Booking = require("../models/Booking");
-const Space = require("../models/Space");
+const { Booking, Space } = require("../models");
 const {
 	validateCreateBooking,
 	validateBookingQuery,
 	validateBookingStatusUpdate,
 } = require("../validators/booking.validator");
 
+// ── Helpers ──────────────────────────────────────────────────────────────────
 const hasOverlap = (startA, endA, startB, endB) => startA < endB && startB < endA;
 
-const getNextBookingLegacyId = async () => {
-	const latest = await Booking.findOne().sort({ legacyId: -1 }).select("legacyId").lean();
-	return latest?.legacyId ? latest.legacyId + 1 : 101;
+const toPlain = (instance) => {
+	if (!instance) return null;
+	return instance.get ? instance.get({ plain: true }) : { ...instance };
 };
 
+// ── Service methods ──────────────────────────────────────────────────────────
 const listBookings = async (query = {}) => {
 	const { isValid, errors, value } = validateBookingQuery(query);
 	if (!isValid) {
 		throw ApiError.badRequest("Invalid booking query", errors);
 	}
 
-	const mongoQuery = {};
+	const where = {};
 
 	if (value.spaceId !== undefined) {
-		mongoQuery.spaceId = value.spaceId;
+		where.spaceId = value.spaceId;
 	}
 
 	if (value.status) {
-		mongoQuery.status = value.status;
+		where.status = value.status;
 	}
 
 	if (value.date) {
-		mongoQuery.date = value.date;
+		where.date = value.date;
 	}
 
-	return Booking.find(mongoQuery).sort({ legacyId: -1 });
+	const bookings = await Booking.findAll({
+		where,
+		order: [["id", "DESC"]],
+	});
+
+	return bookings.map(toPlain);
 };
 
 const getBookingById = async (bookingId) => {
 	const id = Number(bookingId);
-	const booking = await Booking.findOne({ legacyId: id });
+	const booking = await Booking.findByPk(id);
 
 	if (!booking) {
 		throw ApiError.notFound("Booking not found");
 	}
 
-	return booking;
+	return toPlain(booking);
 };
 
 const createBooking = async (payload = {}) => {
@@ -54,7 +61,7 @@ const createBooking = async (payload = {}) => {
 		throw ApiError.badRequest("Invalid booking payload", errors);
 	}
 
-	const space = await Space.findOne({ legacyId: value.spaceId });
+	const space = await Space.findByPk(value.spaceId);
 	if (!space) {
 		throw ApiError.notFound("Space not found");
 	}
@@ -63,35 +70,30 @@ const createBooking = async (payload = {}) => {
 		throw ApiError.badRequest("Participant count exceeds selected space capacity");
 	}
 
-	const sameDayBookings = await Booking.find({
-		spaceId: value.spaceId,
-		date: value.date,
-		status: { $ne: "Rejected" },
+	// Fetch same-day bookings for this space (excluding Rejected)
+	const sameDayBookings = await Booking.findAll({
+		where: {
+			spaceId: value.spaceId,
+			date: value.date,
+			status: { [Op.ne]: "Rejected" },
+		},
 	});
 
-	const conflict = sameDayBookings.find((booking) => {
-		if (booking.status === "Rejected") {
-			return false;
-		}
-
-		return (
-			booking.spaceId === value.spaceId &&
-			booking.date === value.date &&
-			hasOverlap(value.start, value.end, booking.start, booking.end)
-		);
-	});
+	const conflict = sameDayBookings.find((booking) =>
+		hasOverlap(value.start, value.end, booking.start, booking.end)
+	);
 
 	if (conflict) {
 		throw ApiError.conflict("Selected time overlaps with an existing booking");
 	}
 
-	const legacyId = await getNextBookingLegacyId();
-	return Booking.create({ ...value, legacyId, spaceId: space.legacyId });
+	const booking = await Booking.create({ ...value });
+	return toPlain(booking);
 };
 
 const updateBookingStatus = async (bookingId, payload = {}) => {
 	const id = Number(bookingId);
-	const existing = await Booking.findOne({ legacyId: id });
+	const existing = await Booking.findByPk(id);
 	if (!existing) {
 		throw ApiError.notFound("Booking not found");
 	}
@@ -101,24 +103,20 @@ const updateBookingStatus = async (bookingId, payload = {}) => {
 		throw ApiError.badRequest("Invalid status payload", errors);
 	}
 
-	const updatedBooking = await Booking.findByIdAndUpdate(
-		existing._id,
-		{ status: value.status },
-		{ new: true, runValidators: true }
-	);
-
-	return updatedBooking;
+	await existing.update({ status: value.status });
+	return toPlain(existing);
 };
 
 const deleteBooking = async (bookingId) => {
 	const id = Number(bookingId);
-	const removed = await Booking.findOneAndDelete({ legacyId: id });
+	const booking = await Booking.findByPk(id);
 
-	if (!removed) {
+	if (!booking) {
 		throw ApiError.notFound("Booking not found");
 	}
 
-	return removed;
+	await booking.destroy();
+	return toPlain(booking);
 };
 
 module.exports = {
@@ -128,4 +126,3 @@ module.exports = {
 	updateBookingStatus,
 	deleteBooking,
 };
-

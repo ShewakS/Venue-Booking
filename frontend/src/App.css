@@ -3,7 +3,7 @@
   --panel: #ffffff;
   --panel-muted: #f4f7fb;
   --text: #111935;
-  --muted: #5d6783;
+  --muted: #6b7280;
   --primary: #42c08c;
   --primary-strong: #2da774;
   --accent: #2c8df7;
@@ -19,6 +19,51 @@ body {
   color: var(--text);
   background: var(--bg);
   min-height: 100vh;
+  font-family: "Manrope", "Segoe UI", Tahoma, sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  color: #1d283b;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+h1 {
+  font-size: clamp(2.5rem, 4vw, 3.5rem);
+  font-weight: 800;
+}
+
+h2 {
+  font-size: clamp(2rem, 3.2vw, 2.8rem);
+  font-weight: 800;
+}
+
+h3 {
+  font-size: clamp(1.4rem, 2.2vw, 1.75rem);
+  font-weight: 700;
+}
+
+h4 {
+  font-size: clamp(1.15rem, 1.8vw, 1.35rem);
+  font-weight: 700;
+}
+
+p,
+label,
+input,
+select,
+textarea,
+td,
+th,
+span {
+  line-height: 1.45;
 }
 
 .app-shell {
@@ -70,7 +115,8 @@ body {
 .sidebar-subtitle {
   margin: 6px 0 0 0;
   color: #c2d8ff;
-  font-size: 18px;
+  font-size: 1rem;
+  font-weight: 500;
 }
 
 .sidebar-nav {
@@ -82,13 +128,27 @@ body {
 }
 
 .sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   text-decoration: none;
   color: #c4cceb;
   padding: 12px 14px;
   border-radius: 12px;
   transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
   border: 1px solid transparent;
+  font-size: 1.03rem;
   font-weight: 600;
+}
+
+.sidebar-link-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  color: #9ab0e8;
+  transition: color 0.2s ease;
 }
 
 .sidebar-link.active,
@@ -97,6 +157,11 @@ body {
   border-color: rgba(66, 192, 140, 0.28);
   color: #ffffff;
   transform: translateX(4px);
+}
+
+.sidebar-link.active .sidebar-link-icon,
+.sidebar-link:hover .sidebar-link-icon {
+  color: #d9fff0;
 }
 
 .sidebar-help {
@@ -159,15 +224,15 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 1.24rem;
+  font-weight: 800;
   color: #ffffff;
 }
 
 .navbar-subtitle {
   margin: 4px 0 0 0;
   color: #b9c5e4;
-  font-size: 13px;
+  font-size: 0.92rem;
   font-weight: 500;
 }
 
@@ -195,7 +260,8 @@ body {
   padding: 9px 12px;
   border-radius: 10px;
   border: 1px solid transparent;
-  font-weight: 500;
+  font-size: 1.03rem;
+  font-weight: 600;
   transition: all 0.2s ease;
 }
 
@@ -208,7 +274,8 @@ body {
 
 .navbar-user {
   color: #e5ebff;
-  font-weight: 500;
+  font-size: 1rem;
+  font-weight: 600;
 }
 
 .navbar-logo {
@@ -247,7 +314,7 @@ body {
 .card {
   background: var(--panel);
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: 12px;
   padding: 18px;
   box-shadow: var(--shadow-soft);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -324,6 +391,13 @@ body {
   box-shadow: none;
 }
 
+.card p,
+.muted,
+.sidebar-help-text,
+.navbar-subtitle {
+  color: var(--muted);
+}
+
 .input-field {
   display: flex;
   flex-direction: column;
@@ -351,7 +425,12 @@ body {
 
 .table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: #ffffff;
 }
 
 .table th,
@@ -359,6 +438,10 @@ body {
   text-align: left;
   padding: 12px 10px;
   border-bottom: 1px solid var(--border);
+}
+
+.table tr:last-child td {
+  border-bottom: none;
 }
 
 .table th {

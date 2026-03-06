@@ -1,51 +1,55 @@
+const { Op } = require("sequelize");
 const ApiError = require("../utils/ApiError");
-const Space = require("../models/Space");
-const Booking = require("../models/Booking");
+const { Space, Booking } = require("../models");
 const {
 	validateCreateSpace,
 	validateUpdateSpace,
 	validateSpaceQuery,
 } = require("../validators/space.validator");
 
-const getNextSpaceLegacyId = async () => {
-	const latest = await Space.findOne().sort({ legacyId: -1 }).select("legacyId").lean();
-	return latest?.legacyId ? latest.legacyId + 1 : 1;
+// ── Helper ───────────────────────────────────────────────────────────────────
+const toPlain = (instance) => {
+	if (!instance) return null;
+	return instance.get ? instance.get({ plain: true }) : { ...instance };
 };
 
+// ── Service methods ──────────────────────────────────────────────────────────
 const listSpaces = async (query = {}) => {
 	const { isValid, errors, value } = validateSpaceQuery(query);
 	if (!isValid) {
 		throw ApiError.badRequest("Invalid space query", errors);
 	}
 
-	const mongoQuery = {};
+	const where = {};
 
 	if (value.type) {
-		mongoQuery.type = new RegExp(`^${value.type.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i");
+		// Case-insensitive exact match using PostgreSQL ILIKE
+		where.type = { [Op.iLike]: value.type };
 	}
 
 	if (value.minCapacity !== undefined || value.maxCapacity !== undefined) {
-		mongoQuery.capacity = {};
+		where.capacity = {};
 		if (value.minCapacity !== undefined) {
-			mongoQuery.capacity.$gte = value.minCapacity;
+			where.capacity[Op.gte] = value.minCapacity;
 		}
 		if (value.maxCapacity !== undefined) {
-			mongoQuery.capacity.$lte = value.maxCapacity;
+			where.capacity[Op.lte] = value.maxCapacity;
 		}
 	}
 
-	return Space.find(mongoQuery).sort({ legacyId: 1 });
+	const spaces = await Space.findAll({ where, order: [["id", "ASC"]] });
+	return spaces.map(toPlain);
 };
 
 const getSpaceById = async (spaceId) => {
 	const id = Number(spaceId);
-	const space = await Space.findOne({ legacyId: id });
+	const space = await Space.findByPk(id);
 
 	if (!space) {
 		throw ApiError.notFound("Space not found");
 	}
 
-	return space;
+	return toPlain(space);
 };
 
 const createSpace = async (payload = {}) => {
@@ -54,15 +58,16 @@ const createSpace = async (payload = {}) => {
 		throw ApiError.badRequest("Invalid space payload", errors);
 	}
 
-	const duplicate = await Space.exists({
-		name: new RegExp(`^${value.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i"),
+	// Case-insensitive duplicate name check
+	const duplicate = await Space.findOne({
+		where: { name: { [Op.iLike]: value.name } },
 	});
 	if (duplicate) {
 		throw ApiError.conflict("Space with the same name already exists");
 	}
 
-	const legacyId = await getNextSpaceLegacyId();
-	return Space.create({ ...value, legacyId });
+	const space = await Space.create({ ...value });
+	return toPlain(space);
 };
 
 const updateSpace = async (payload = {}) => {
@@ -71,37 +76,38 @@ const updateSpace = async (payload = {}) => {
 		throw ApiError.badRequest("Invalid update payload", errors);
 	}
 
-	const existing = await Space.findOne({ legacyId: value.id });
+	const existing = await Space.findByPk(value.id);
 	if (!existing) {
 		throw ApiError.notFound("Space not found");
 	}
 
-	const duplicate = await Space.exists({
-		legacyId: { $ne: value.id },
-		name: new RegExp(`^${value.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i"),
+	// Case-insensitive duplicate name check (excluding self)
+	const duplicate = await Space.findOne({
+		where: {
+			id: { [Op.ne]: value.id },
+			name: { [Op.iLike]: value.name },
+		},
 	});
 	if (duplicate) {
 		throw ApiError.conflict("Another space with the same name already exists");
 	}
 
-	const updated = await Space.findOneAndUpdate(
-		{ legacyId: value.id },
-		{ ...value, legacyId: value.id },
-		{ new: true, runValidators: true }
-	);
-	return updated;
+	await existing.update({ name: value.name, type: value.type, capacity: value.capacity });
+	return toPlain(existing);
 };
 
 const deleteSpace = async (spaceId) => {
 	const id = Number(spaceId);
-	const removedSpace = await Space.findOneAndDelete({ legacyId: id });
-	if (!removedSpace) {
+	const space = await Space.findByPk(id);
+	if (!space) {
 		throw ApiError.notFound("Space not found");
 	}
 
-	await Booking.deleteMany({ spaceId: removedSpace.legacyId });
+	// Delete all bookings referencing this space (cascade behaviour)
+	await Booking.destroy({ where: { spaceId: space.id } });
 
-	return removedSpace;
+	await space.destroy();
+	return toPlain(space);
 };
 
 module.exports = {
@@ -111,4 +117,3 @@ module.exports = {
 	updateSpace,
 	deleteSpace,
 };
-

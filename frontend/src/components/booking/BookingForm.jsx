@@ -134,10 +134,10 @@ const BookingForm = ({ spaces, bookings, timetable, onAddBooking }) => {
           <span>Event Type</span>
           <select id="type" value={form.type} onChange={handleChange("type")}>
             <option>Seminar</option>
-            <option>Lab</option>
             <option>Club</option>
             <option>Workshop</option>
-            <option>Lecture</option>
+            <option>Hackathon</option>
+            <option>Training</option>
           </select>
         </label>
         <label className="input-field" htmlFor="space">

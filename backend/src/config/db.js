@@ -1,45 +1,78 @@
-const mongoose = require("mongoose");
+const { Sequelize } = require("sequelize");
 const bcrypt = require("bcryptjs");
 const env = require("./env");
 const logger = require("../utils/logger");
-const User = require("../models/User");
-const Space = require("../models/Space");
-const Booking = require("../models/Booking");
 
+// ── Build Sequelize instance ────────────────────────────────────────────────
+let sequelize;
+
+if (env.databaseUrl) {
+	// Cloud platforms (Render, Railway, Heroku) provide a single connection URL
+	sequelize = new Sequelize(env.databaseUrl, {
+		dialect: "postgres",
+		protocol: "postgres",
+		dialectOptions: {
+			ssl: {
+				require: true,
+				rejectUnauthorized: false,
+			},
+		},
+		logging: false,
+	});
+} else {
+	// Local development — individual env vars
+	sequelize = new Sequelize(env.pgDatabase, env.pgUser, env.pgPassword, {
+		host: env.pgHost,
+		port: env.pgPort,
+		dialect: "postgres",
+		logging: false,
+	});
+}
+
+// ── Seed helpers ────────────────────────────────────────────────────────────
 const SALT_ROUNDS = 10;
 
 const seedDatabase = async () => {
-	const spaceCount = await Space.countDocuments();
+	// Lazy-require models AFTER they've been registered via sequelize instance
+	const { User, Space, Booking } = require("../models");
+
+	const spaceCount = await Space.count();
 	if (spaceCount > 0) {
-		return;
+		return; // Already seeded
 	}
 
 	const defaultPasswordHash = await bcrypt.hash("password123", SALT_ROUNDS);
 
-	await User.insertMany([
+	await User.bulkCreate([
 		{ name: "Event Organizer", email: "organizer@venue.local", password: defaultPasswordHash, role: "admin" },
 		{ name: "Faculty User", email: "faculty@venue.local", password: defaultPasswordHash, role: "faculty" },
-		{
-			name: "Student Coordinator",
-			email: "coordinator@venue.local",
-			password: defaultPasswordHash,
-			role: "coordinator",
-		},
+		{ name: "Student Coordinator", email: "coordinator@venue.local", password: defaultPasswordHash, role: "coordinator" },
 	]);
 
-	await Space.insertMany([
-		{ legacyId: 1, name: "Bytes Lab", type: "Computer Lab", capacity: 120, equipment: [] },
-		{ legacyId: 2, name: "Vista Hall", type: "Seminar Hall", capacity: 200, equipment: [] },
-		{ legacyId: 3, name: "Classroom SF05", type: "Classroom", capacity: 80, equipment: [] },
-		{ legacyId: 4, name: "Code Studio", type: "Computer Lab", capacity: 250, equipment: [] },
+	await Space.bulkCreate([
+		{ name: "Bytes Lab", type: "Computer Lab", capacity: 120 },
+		{ name: "Vista Hall", type: "Seminar Hall", capacity: 200 },
+		{ name: "Classroom SF05", type: "Classroom", capacity: 80 },
+		{ name: "Code Studio", type: "Computer Lab", capacity: 250 },
 	]);
 
-	await Booking.insertMany([
+	// Fetch seeded spaces by name so IDs are always correct regardless of insertion order.
+	const seededSpaces = await Space.findAll();
+
+	const spaceByName = Object.fromEntries(seededSpaces.map((space) => [space.name, space]));
+	const bytesLab = spaceByName["Bytes Lab"];
+	const codeStudio = spaceByName["Code Studio"];
+	const vistaHall = spaceByName["Vista Hall"];
+
+	if (!bytesLab || !codeStudio || !vistaHall) {
+		throw new Error("Failed to resolve seeded spaces while creating initial bookings");
+	}
+
+	await Booking.bulkCreate([
 		{
-			legacyId: 101,
 			title: "AI Lab Session",
-			type: "Lab",
-			spaceId: 1,
+			type: "Training",
+			spaceId: bytesLab.id,
 			date: "2026-02-14",
 			start: "09:00",
 			end: "11:00",
@@ -51,10 +84,9 @@ const seedDatabase = async () => {
 			notes: "",
 		},
 		{
-			legacyId: 102,
 			title: "Robotics Club Meetup",
 			type: "Club",
-			spaceId: 4,
+			spaceId: codeStudio.id,
 			date: "2026-02-14",
 			start: "14:00",
 			end: "16:00",
@@ -66,10 +98,9 @@ const seedDatabase = async () => {
 			notes: "",
 		},
 		{
-			legacyId: 103,
 			title: "Faculty Seminar",
 			type: "Seminar",
-			spaceId: 2,
+			spaceId: vistaHall.id,
 			date: "2026-02-15",
 			start: "10:00",
 			end: "12:00",
@@ -85,22 +116,38 @@ const seedDatabase = async () => {
 	logger.info("Database seeded with initial records");
 };
 
+// ── Main connect function (called from server.js) ───────────────────────────
 const connectDB = async () => {
 	try {
-		await mongoose.connect(env.mongoUri, {
-			autoIndex: true,
+		await sequelize.authenticate();
+		logger.info("PostgreSQL connected", {
+			host: env.databaseUrl ? "via DATABASE_URL" : env.pgHost,
+			database: env.pgDatabase,
 		});
 
-		logger.info("MongoDB connected", {
-			host: mongoose.connection.host,
-			name: mongoose.connection.name,
-		});
+		try {
+			// Preferred path: only create missing tables/indexes, keep existing data.
+			await sequelize.sync({ alter: false });
+			logger.info("Database tables synced");
+		} catch (syncError) {
+			if (env.nodeEnv === "production") {
+				throw syncError;
+			}
+
+			logger.warn("Schema sync failed in development, rebuilding tables", {
+				error: syncError.message,
+			});
+
+			// Development fallback for legacy/mismatched schemas.
+			await sequelize.sync({ force: true });
+			logger.info("Database tables recreated");
+		}
 
 		await seedDatabase();
 	} catch (error) {
-		logger.error("MongoDB connection failed", error);
+		logger.error("PostgreSQL connection failed", error);
 		throw error;
 	}
 };
 
-module.exports = connectDB;
+module.exports = { sequelize, connectDB };

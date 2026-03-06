@@ -1,10 +1,10 @@
 const ApiError = require("../utils/ApiError");
+const { User } = require("../models");
 const { USER_ROLES } = require("../validators/auth.validator");
-const User = require("../models/User");
 
 const sanitizeUser = (user) => {
-	const document = user.toJSON ? user.toJSON() : user;
-	const { password, ...safeUser } = document;
+	const plain = user.get ? user.get({ plain: true }) : { ...user };
+	const { password, ...safeUser } = plain;
 	return safeUser;
 };
 
@@ -15,12 +15,13 @@ const listUsers = async (query = {}) => {
 		throw ApiError.badRequest(`role must be one of: ${USER_ROLES.join(", ")}`);
 	}
 
-	const users = role ? await User.find({ role }).sort({ createdAt: -1 }) : await User.find().sort({ createdAt: -1 });
+	const where = role ? { role } : {};
+	const users = await User.findAll({ where, order: [["createdAt", "DESC"]] });
 	return users.map(sanitizeUser);
 };
 
 const getUserById = async (userId) => {
-	const user = await User.findById(userId);
+	const user = await User.findByPk(userId);
 
 	if (!user) {
 		throw ApiError.notFound("User not found");
@@ -30,7 +31,7 @@ const getUserById = async (userId) => {
 };
 
 const updateUser = async (userId, payload = {}) => {
-	const existing = await User.findById(userId);
+	const existing = await User.findByPk(userId);
 
 	if (!existing) {
 		throw ApiError.notFound("User not found");
@@ -51,26 +52,23 @@ const updateUser = async (userId, payload = {}) => {
 		throw ApiError.badRequest(`role must be one of: ${USER_ROLES.join(", ")}`);
 	}
 
-	const updated = await User.findByIdAndUpdate(
-		userId,
-		{
-			...(name !== undefined ? { name } : {}),
-			...(role !== undefined ? { role } : {}),
-		},
-		{ new: true, runValidators: true }
-	);
+	await existing.update({
+		...(name !== undefined ? { name } : {}),
+		...(role !== undefined ? { role } : {}),
+	});
 
-	return sanitizeUser(updated);
+	return sanitizeUser(existing);
 };
 
 const deleteUser = async (userId) => {
-	const removed = await User.findByIdAndDelete(userId);
+	const user = await User.findByPk(userId);
 
-	if (!removed) {
+	if (!user) {
 		throw ApiError.notFound("User not found");
 	}
 
-	return sanitizeUser(removed);
+	await user.destroy();
+	return sanitizeUser(user);
 };
 
 module.exports = {
@@ -79,4 +77,3 @@ module.exports = {
 	updateUser,
 	deleteUser,
 };
-

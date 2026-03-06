@@ -52,7 +52,6 @@ const AdminDashboard = () => {
       name: form.name.trim(),
       type: form.type.trim(),
       capacity: Number(form.capacity),
-      equipment: [],
     };
 
     if (!payload.name || !payload.type || !payload.capacity) {

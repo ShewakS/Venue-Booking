@@ -26,16 +26,16 @@ const dataStore = {
     },
   ],
   spaces: [
-    { id: 1, name: "Bytes Lab", type: "Computer Lab", capacity: 120, equipment: [] },
-    { id: 2, name: "Vista Hall", type: "Seminar Hall", capacity: 200, equipment: [] },
-    { id: 3, name: "Classroom SF05", type: "Classroom", capacity: 80, equipment: [] },
-    { id: 4, name: "Code Studio", type: "Computer Lab", capacity: 250, equipment: [] },
+    { id: 1, name: "Bytes Lab", type: "Computer Lab", capacity: 120 },
+    { id: 2, name: "Vista Hall", type: "Seminar Hall", capacity: 200 },
+    { id: 3, name: "Classroom SF05", type: "Classroom", capacity: 80 },
+    { id: 4, name: "Code Studio", type: "Computer Lab", capacity: 250 },
   ],
   bookings: [
     {
       id: 101,
       title: "AI Lab Session",
-      type: "Lab",
+      type: "Training",
       spaceId: 1,
       date: "2026-02-14",
       start: "09:00",

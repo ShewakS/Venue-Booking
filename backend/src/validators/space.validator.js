@@ -1,24 +1,12 @@
 const asString = (value) => (typeof value === "string" ? value.trim() : "");
 const asNumber = (value) => (typeof value === "number" ? value : Number(value));
 
-const normalizeEquipment = (equipment) => {
-	if (!Array.isArray(equipment)) {
-		return [];
-	}
-
-	return equipment
-		.map((item) => asString(item))
-		.filter(Boolean)
-		.slice(0, 50);
-};
-
 const validateCreateSpace = (payload = {}) => {
 	const errors = [];
 
 	const name = asString(payload.name);
 	const type = asString(payload.type);
 	const capacity = asNumber(payload.capacity);
-	const equipment = normalizeEquipment(payload.equipment);
 
 	if (!name) {
 		errors.push("name is required");
@@ -45,7 +33,6 @@ const validateCreateSpace = (payload = {}) => {
 			name,
 			type,
 			capacity,
-			equipment,
 		},
 	};
 };

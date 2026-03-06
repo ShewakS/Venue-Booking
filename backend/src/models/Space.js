@@ -1,52 +1,50 @@
-const mongoose = require("mongoose");
+const { DataTypes } = require("sequelize");
+const { sequelize } = require("../config/db");
 
-const spaceSchema = new mongoose.Schema(
+const Space = sequelize.define(
+	"Space",
 	{
-		legacyId: {
-			type: Number,
-			required: true,
-			unique: true,
-			index: true,
+		id: {
+			type: DataTypes.INTEGER,
+			primaryKey: true,
+			autoIncrement: true,
 		},
 		name: {
-			type: String,
-			required: true,
-			trim: true,
-			maxlength: 100,
+			type: DataTypes.STRING(100),
+			allowNull: false,
 			unique: true,
+			validate: {
+				notEmpty: true,
+				len: [1, 100],
+			},
+			set(value) {
+				this.setDataValue("name", typeof value === "string" ? value.trim() : value);
+			},
 		},
 		type: {
-			type: String,
-			required: true,
-			trim: true,
-			maxlength: 60,
-			index: true,
+			type: DataTypes.STRING(60),
+			allowNull: false,
+			validate: {
+				notEmpty: true,
+			},
+			set(value) {
+				this.setDataValue("type", typeof value === "string" ? value.trim() : value);
+			},
 		},
 		capacity: {
-			type: Number,
-			required: true,
-			min: 1,
-			max: 5000,
-			index: true,
-		},
-		equipment: {
-			type: [String],
-			default: [],
+			type: DataTypes.INTEGER,
+			allowNull: false,
+			validate: {
+				min: 1,
+				max: 5000,
+			},
 		},
 	},
 	{
+		tableName: "spaces",
 		timestamps: true,
-		versionKey: false,
+		underscored: true,
 	}
 );
 
-spaceSchema.set("toJSON", {
-	transform: (doc, ret) => {
-		ret.id = ret.legacyId;
-		delete ret.legacyId;
-		delete ret._id;
-		return ret;
-	},
-});
-
-module.exports = mongoose.model("Space", spaceSchema);
+module.exports = Space;

@@ -8,8 +8,15 @@ const sanitizeUser = (user) => {
 	return safeUser;
 };
 
+const normalizeRole = (value) => {
+	if (typeof value !== "string") return "";
+	const role = value.trim().toLowerCase();
+	if (role === "coordinator" || role === "student coordinator") return "student";
+	return role;
+};
+
 const listUsers = async (query = {}) => {
-	const role = typeof query.role === "string" ? query.role.trim().toLowerCase() : "";
+	const role = normalizeRole(query.role);
 
 	if (role && !USER_ROLES.includes(role)) {
 		throw ApiError.badRequest(`role must be one of: ${USER_ROLES.join(", ")}`);
@@ -38,7 +45,7 @@ const updateUser = async (userId, payload = {}) => {
 	}
 
 	const name = typeof payload.name === "string" ? payload.name.trim() : undefined;
-	const role = typeof payload.role === "string" ? payload.role.trim().toLowerCase() : undefined;
+	const role = typeof payload.role === "string" ? normalizeRole(payload.role) : undefined;
 
 	if (name !== undefined && !name) {
 		throw ApiError.badRequest("name cannot be empty");

@@ -1,13 +1,14 @@
 export const ROLES = {
   ADMIN: "admin",
   FACULTY: "faculty",
-  COORDINATOR: "coordinator",
+  STUDENT: "student",
+  COORDINATOR: "student",
 };
 
 export const ROLE_LABELS = {
   [ROLES.ADMIN]: "Event Organizer",
   [ROLES.FACULTY]: "Faculty",
-  [ROLES.COORDINATOR]: "Student Coordinator",
+  [ROLES.STUDENT]: "Student",
 };
 
 export const roleHomePath = (role) => {
@@ -16,7 +17,8 @@ export const roleHomePath = (role) => {
       return "/dashboard/admin";
     case ROLES.FACULTY:
       return "/dashboard/faculty";
-    case ROLES.COORDINATOR:
+    case ROLES.STUDENT:
+    case "coordinator":
       return "/dashboard/coordinator";
     default:
       return "/login";

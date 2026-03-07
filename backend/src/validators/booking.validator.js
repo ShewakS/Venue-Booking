@@ -10,8 +10,8 @@ const normalizeRequestedRole = (value) => {
 	if (!raw) return "";
 	if (raw === "admin" || raw === "event organizer") return "admin";
 	if (raw === "faculty") return "faculty";
-	if (raw === "coordinator" || raw === "student coordinator" || raw === "event coordinator") {
-		return "coordinator";
+	if (raw === "student" || raw === "coordinator" || raw === "student coordinator" || raw === "event coordinator") {
+		return "student";
 	}
 
 	return "";
@@ -85,7 +85,7 @@ const validateCreateBooking = (payload = {}) => {
 	}
 
 	if (requestedRoleRaw && !requestedRole) {
-		errors.push("requestedRole must be one of: admin, faculty, coordinator");
+		errors.push("requestedRole must be one of: admin, faculty, student");
 	}
 
 	return {

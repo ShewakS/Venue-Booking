@@ -79,7 +79,7 @@ const Sidebar = () => {
       subtitle: "Booking Requests",
     },
     [ROLES.COORDINATOR]: {
-      title: "Coordinator Portal",
+      title: "Student Portal",
       subtitle: "Campus Events",
     },
   };

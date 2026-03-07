@@ -34,8 +34,19 @@ const User = sequelize.define(
 			allowNull: false,
 			defaultValue: "",
 		},
+		phone: {
+			type: DataTypes.STRING(20),
+			allowNull: false,
+			defaultValue: "",
+		},
+		roleDescription: {
+			type: DataTypes.STRING(120),
+			allowNull: false,
+			defaultValue: "",
+			field: "role_description",
+		},
 		role: {
-			type: DataTypes.ENUM("admin", "faculty", "coordinator"),
+			type: DataTypes.ENUM("admin", "faculty", "student", "coordinator"),
 			allowNull: false,
 		},
 	},

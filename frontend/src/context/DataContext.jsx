@@ -3,6 +3,19 @@ import api from "../services/api";
 
 const DataContext = createContext(null);
 
+const uniqueById = (items) => {
+  const map = new Map();
+
+  (Array.isArray(items) ? items : []).forEach((item) => {
+    if (!item || item.id === undefined || item.id === null) {
+      return;
+    }
+    map.set(String(item.id), item);
+  });
+
+  return Array.from(map.values());
+};
+
 export const DataProvider = ({ children }) => {
   const [spaces, setSpaces] = useState([]);
   const [bookings, setBookings] = useState([]);
@@ -12,7 +25,8 @@ export const DataProvider = ({ children }) => {
   const loadSpaces = async () => {
     try {
       const response = await api.get("/spaces");
-      setSpaces(response?.data?.data || []);
+      const normalized = uniqueById(response?.data?.data || []);
+      setSpaces(normalized);
     } catch {
       setSpaces([]);
     }
@@ -21,7 +35,8 @@ export const DataProvider = ({ children }) => {
   const loadBookings = async () => {
     try {
       const response = await api.get("/bookings");
-      setBookings(response?.data?.data || []);
+      const normalized = uniqueById(response?.data?.data || []);
+      setBookings(normalized);
     } catch {
       setBookings([]);
     }
@@ -31,6 +46,26 @@ export const DataProvider = ({ children }) => {
     loadSpaces();
     loadBookings();
     setTimetable([]);
+  }, []);
+
+  useEffect(() => {
+    // Keep UI aligned with DB changes (insert/update/delete) even without manual refresh.
+    const intervalId = setInterval(() => {
+      loadSpaces();
+      loadBookings();
+    }, 10000);
+
+    const handleFocus = () => {
+      loadSpaces();
+      loadBookings();
+    };
+
+    window.addEventListener("focus", handleFocus);
+
+    return () => {
+      clearInterval(intervalId);
+      window.removeEventListener("focus", handleFocus);
+    };
   }, []);
 
   const addSpace = async (space) => {

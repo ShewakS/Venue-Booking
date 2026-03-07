@@ -3,6 +3,7 @@ import { useData } from "../context/DataContext";
 import BookingList from "../components/booking/BookingList";
 import Button from "../components/common/Button";
 import CalendarView from "../components/calendar/CalendarView";
+import StatCard from "../components/common/StatCard";
 
 const AdminDashboard = () => {
   const {
@@ -77,18 +78,9 @@ const AdminDashboard = () => {
   return (
     <div style={{ display: "grid", gap: "16px" }}>
       <div className="card-grid">
-        <div className="card">
-          <h4>Total Spaces</h4>
-          <p>{totals.totalSpaces}</p>
-        </div>
-        <div className="card">
-          <h4>Total Requests</h4>
-          <p>{totals.totalBookings}</p>
-        </div>
-        <div className="card">
-          <h4>Pending Requests</h4>
-          <p>{totals.pendingRequests}</p>
-        </div>
+        <StatCard title="Total Spaces" value={totals.totalSpaces} icon="spaces" tone="blue" />
+        <StatCard title="Total Requests" value={totals.totalBookings} icon="bookings" tone="teal" />
+        <StatCard title="Pending Requests" value={totals.pendingRequests} icon="pending" tone="amber" />
       </div>
 
       <div className="card-grid">

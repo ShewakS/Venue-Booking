@@ -1,35 +1,24 @@
 import React from "react";
-import { useAuth } from "../context/AuthContext";
 import { useData } from "../context/DataContext";
 import BookingList from "../components/booking/BookingList";
+import StatCard from "../components/common/StatCard";
 
 const StudentDashboard = () => {
-  const { user } = useAuth();
   const { spaces, bookings, timetable } = useData();
 
-  const myBookings = bookings.filter((booking) => booking.requestedBy === user?.name);
+  const myBookings = bookings.filter(
+    (booking) => booking.requestedRole === "student" || booking.requestedRole === "coordinator"
+  );
 
   return (
     <div style={{ display: "grid", gap: "16px" }}>
       <div className="card-grid">
-        <div className="card">
-          <h4>Active Requests</h4>
-          <p>{myBookings.length}</p>
-        </div>
-        <div className="card">
-          <h4>Spaces Available</h4>
-          <p>{spaces.length}</p>
-        </div>
-        <div className="card">
-          <h4>Academic Blocks</h4>
-          <p>{timetable.length}</p>
-        </div>
+        <StatCard title="Active Requests" value={myBookings.length} icon="bookings" tone="teal" />
+        <StatCard title="Spaces Available" value={spaces.length} icon="spaces" tone="blue" />
+        <StatCard title="Academic Blocks" value={timetable.length} icon="academic" tone="violet" />
       </div>
 
-      <div className="card">
-        <h3>Booking Requests</h3>
-        <BookingList bookings={myBookings} spaces={spaces} />
-      </div>
+      <BookingList bookings={myBookings} spaces={spaces} />
     </div>
   );
 };

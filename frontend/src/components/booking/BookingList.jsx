@@ -23,6 +23,8 @@ const BookingList = ({ bookings, spaces, onStatusChange, showActions = false }) 
         </thead>
         <tbody>
           {bookings.map((booking) => (
+            // Status decision is final: once not Pending, disable both action buttons.
+            // This prevents toggling Approved <-> Rejected from the UI.
             <tr key={booking.id}>
               <td>
                 <strong>{booking.title}</strong>
@@ -42,14 +44,14 @@ const BookingList = ({ bookings, spaces, onStatusChange, showActions = false }) 
                 <td style={{ display: "flex", gap: "8px" }}>
                   <Button
                     onClick={() => onStatusChange(booking.id, "Approved")}
-                    disabled={booking.status === "Approved"}
+                    disabled={booking.status !== "Pending"}
                   >
                     Approve
                   </Button>
                   <Button
                     className="secondary"
                     onClick={() => onStatusChange(booking.id, "Rejected")}
-                    disabled={booking.status === "Rejected"}
+                    disabled={booking.status !== "Pending"}
                   >
                     Reject
                   </Button>

@@ -103,6 +103,10 @@ const updateBookingStatus = async (bookingId, payload = {}) => {
 		throw ApiError.badRequest("Invalid status payload", errors);
 	}
 
+	if (existing.status !== "Pending") {
+		throw ApiError.badRequest("Booking status is final and cannot be changed");
+	}
+
 	await existing.update({ status: value.status });
 	return toPlain(existing);
 };

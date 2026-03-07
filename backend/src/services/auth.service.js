@@ -73,6 +73,8 @@ const register = async (payload = {}) => {
 		email: value.email,
 		password: hashedPassword,
 		role: value.role,
+		phone: value.phone,
+		roleDescription: value.roleDescription,
 	});
 
 	return {

@@ -1,8 +1,19 @@
-const USER_ROLES = ["admin", "faculty", "coordinator"];
+const USER_ROLES = ["admin", "faculty", "student"];
 
 const asString = (value) => (typeof value === "string" ? value.trim() : "");
 
-const isNonEmptyString = (value) => typeof value === "string" && value.trim().length > 0;
+const normalizeUserRole = (value) => {
+	const role = asString(value).toLowerCase();
+
+	if (!role) return "";
+	if (role === "coordinator" || role === "student coordinator") return "student";
+	return role;
+};
+
+const normalizePhone = (value) => {
+	const phone = asString(value).replace(/\s+/g, "");
+	return phone;
+};
 
 const validateLogin = (payload = {}) => {
 	const errors = [];
@@ -36,7 +47,9 @@ const validateRegister = (payload = {}) => {
 	const name = asString(payload.name);
 	const email = asString(payload.email).toLowerCase();
 	const password = typeof payload.password === "string" ? payload.password : "";
-	const role = asString(payload.role).toLowerCase();
+	const role = normalizeUserRole(payload.role);
+	const phone = normalizePhone(payload.phone);
+	const roleDescription = asString(payload.roleDescription);
 
 	if (!name) {
 		errors.push("name is required");
@@ -60,6 +73,16 @@ const validateRegister = (payload = {}) => {
 		errors.push(`role must be one of: ${USER_ROLES.join(", ")}`);
 	}
 
+	if (!phone) {
+		errors.push("phone is required");
+	} else if (!/^\+?[0-9]{10,15}$/.test(phone)) {
+		errors.push("phone must be 10 to 15 digits and may start with +");
+	}
+
+	if (roleDescription.length > 120) {
+		errors.push("roleDescription must be at most 120 characters long");
+	}
+
 	return {
 		isValid: errors.length === 0,
 		errors,
@@ -68,6 +91,8 @@ const validateRegister = (payload = {}) => {
 			email,
 			password,
 			role: role || "faculty",
+			phone,
+			roleDescription,
 		},
 	};
 };

@@ -13,6 +13,8 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState(ROLES.ADMIN);
+  const [phone, setPhone] = useState("");
+  const [roleDescription, setRoleDescription] = useState("");
   const [error, setError] = useState("");
 
   const handleSubmit = async (event) => {
@@ -28,6 +30,8 @@ const Login = () => {
           email,
           password,
           role,
+          phone,
+          roleDescription,
         });
       } else {
         user = await login({
@@ -46,7 +50,7 @@ const Login = () => {
   return (
     <div className="login-shell">
       <form className="card login-card" onSubmit={handleSubmit}>
-        <h2>{mode === "register" ? "Create Account" : "Smart Campus Login"}</h2>
+        <h4>{mode === "register" ? "Create Account" : "Smart Campus Login"}</h4><br></br>
         <div style={{ display: "grid", gap: "12px" }}>
           {mode === "register" ? (
             <InputField
@@ -58,6 +62,18 @@ const Login = () => {
             />
           ) : null}
 
+          {mode === "register" ? (
+            <InputField
+              id="phone"
+              label="Phone Number"
+              type="tel"
+              placeholder="Enter your mobile number"
+              value={phone}
+              onChange={(event) => setPhone(event.target.value)}
+            />
+          ) : null}
+
+          
           <InputField
             id="email"
             label="Email"
@@ -80,11 +96,21 @@ const Login = () => {
             <label className="input-field" htmlFor="role">
               <span>Role</span>
               <select id="role" value={role} onChange={(event) => setRole(event.target.value)}>
-                <option value={ROLES.ADMIN}>Event Organizer</option>
+                <option value={ROLES.ADMIN}>Admin</option>
                 <option value={ROLES.FACULTY}>Faculty</option>
-                <option value={ROLES.COORDINATOR}>Student Coordinator</option>
+                <option value={ROLES.STUDENT}>Student</option>
               </select>
             </label>
+          ) : null}
+
+          {mode === "register" ? (
+            <InputField
+              id="roleDescription"
+              label="Role Description"
+              placeholder="Enter your position"
+              value={roleDescription}
+              onChange={(event) => setRoleDescription(event.target.value)}
+            />
           ) : null}
 
           <Button type="submit">{mode === "register" ? "Register" : "Login"}</Button>

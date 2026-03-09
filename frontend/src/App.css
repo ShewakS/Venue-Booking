@@ -187,23 +187,6 @@ span {
   line-height: 1.4;
 }
 
-.sidebar-role {
-  margin-top: 6px;
-  display: inline-flex;
-  width: fit-content;
-  border-radius: 999px;
-  padding: 6px 10px;
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  color: #d8f8ea;
-  border: 1px solid rgba(66, 192, 140, 0.34);
-  background: rgba(66, 192, 140, 0.16);
-  position: relative;
-  z-index: 1;
-}
-
 .navbar {
   background: #1f2340;
   border-bottom: 1px solid rgb(229, 231, 235);
@@ -229,11 +212,17 @@ span {
   color: #ffffff;
 }
 
+.navbar-brand-text {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+}
+
 .navbar-subtitle {
-  margin: 4px 0 0 0;
+  margin: 0;
   color: #b9c5e4;
   font-size: 0.92rem;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .navbar h1,
@@ -279,8 +268,9 @@ span {
 }
 
 .navbar-logo {
-  height: 40px;
+  height: 42px;
   width: auto;
+  display: block;
   object-fit: contain;
 }
 

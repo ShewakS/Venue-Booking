@@ -2,7 +2,7 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { PATHS } from "../../utils/routePaths";
-import { ROLE_LABELS, ROLES, roleHomePath } from "../../utils/roles";
+import { ROLES, roleHomePath } from "../../utils/roles";
 
 const SidebarIcon = ({ name }) => {
   const common = {
@@ -133,8 +133,6 @@ const Sidebar = () => {
         <p className="sidebar-help-title">Need help?</p>
         <p className="sidebar-help-text">Contact support for booking issues.</p>
       </div>
-
-      <div className="sidebar-role">{ROLE_LABELS[role] || "Guest"}</div>
     </aside>
   );
 };

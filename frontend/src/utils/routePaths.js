@@ -6,4 +6,5 @@ export const PATHS = {
   BOOKINGS: "/bookings",
   SPACES: "/spaces",
   CALENDAR: "/calendar",
+  BOOKING_REPORT: "/report",
 };

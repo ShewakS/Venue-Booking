@@ -123,10 +123,81 @@ const deleteBooking = async (bookingId) => {
 	return toPlain(booking);
 };
 
+const getReport = async (query = {}) => {
+	const now = new Date();
+	const scope = typeof query.scope === "string" ? query.scope.trim().toLowerCase() : "month";
+	const year = Number(query.year) || now.getFullYear();
+	const month = Number(query.month) || now.getMonth() + 1;
+
+	if (!["month", "year"].includes(scope)) {
+		throw ApiError.badRequest("scope must be either 'month' or 'year'");
+	}
+
+	if (!Number.isInteger(year) || year < 2000 || year > 9999) {
+		throw ApiError.badRequest("year must be a valid 4-digit year");
+	}
+
+	if (scope === "month" && (!Number.isInteger(month) || month < 1 || month > 12)) {
+		throw ApiError.badRequest("month must be between 1 and 12");
+	}
+
+	const fromDate = scope === "month" ? new Date(Date.UTC(year, month - 1, 1)) : new Date(Date.UTC(year, 0, 1));
+	const toDate =
+		scope === "month"
+			? new Date(Date.UTC(year, month, 1))
+			: new Date(Date.UTC(year + 1, 0, 1));
+
+	const formatDate = (date) => date.toISOString().slice(0, 10);
+
+	const bookings = await Booking.findAll({
+		where: {
+			date: {
+				[Op.gte]: formatDate(fromDate),
+				[Op.lt]: formatDate(toDate),
+			},
+		},
+		order: [["date", "ASC"], ["start", "ASC"]],
+	});
+
+	const bookingRows = bookings.map(toPlain);
+	const uniqueSpaceIds = Array.from(new Set(bookingRows.map((booking) => booking.spaceId).filter(Boolean)));
+	const spaces = uniqueSpaceIds.length
+		? await Space.findAll({ where: { id: uniqueSpaceIds } })
+		: [];
+	const spaceNameById = new Map(spaces.map((space) => [space.id, space.name]));
+
+	const bookingsWithSpace = bookingRows.map((booking) => ({
+		...booking,
+		spaceName: spaceNameById.get(booking.spaceId) || "-",
+	}));
+
+	const statusTotals = bookingsWithSpace.reduce(
+		(acc, booking) => {
+			acc.total += 1;
+			if (booking.status === "Approved") acc.approved += 1;
+			if (booking.status === "Pending") acc.pending += 1;
+			if (booking.status === "Rejected") acc.rejected += 1;
+			return acc;
+		},
+		{ total: 0, approved: 0, pending: 0, rejected: 0 }
+	);
+
+	return {
+		scope,
+		year,
+		month: scope === "month" ? month : null,
+		fromDate: formatDate(fromDate),
+		toDate: formatDate(toDate),
+		totals: statusTotals,
+		bookings: bookingsWithSpace,
+	};
+};
+
 module.exports = {
 	listBookings,
 	getBookingById,
 	createBooking,
 	updateBookingStatus,
 	deleteBooking,
+	getReport,
 };

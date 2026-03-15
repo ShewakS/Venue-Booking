@@ -1,5 +1,6 @@
 const ApiResponse = require("../utils/ApiResponse");
 const bookingService = require("../services/booking.service");
+const PDFDocument = require("pdfkit");
 
 const asyncHandler = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
 
@@ -28,10 +29,57 @@ const deleteBooking = asyncHandler(async (req, res) => {
 	res.status(200).json(new ApiResponse(200, "Booking deleted successfully", booking));
 });
 
+const getBookingReport = asyncHandler(async (req, res) => {
+	const report = await bookingService.getReport(req.query);
+	res.status(200).json(new ApiResponse(200, "Booking report generated successfully", report));
+});
+
+const downloadBookingReportPdf = asyncHandler(async (req, res) => {
+	const report = await bookingService.getReport(req.query);
+	const monthLabel = report.month ? String(report.month).padStart(2, "0") : "all";
+	const fileName = `booking-report-${report.scope}-${report.year}-${monthLabel}.pdf`;
+
+	res.setHeader("Content-Type", "application/pdf");
+	res.setHeader("Content-Disposition", `attachment; filename=\"${fileName}\"`);
+
+	const doc = new PDFDocument({ margin: 36, size: "A4" });
+	doc.pipe(res);
+
+	doc.fontSize(18).text("Venue Booking Report", { align: "left" });
+	doc.moveDown(0.4);
+	doc.fontSize(11).text(`Scope: ${report.scope.toUpperCase()}`);
+	doc.fontSize(11).text(`Year: ${report.year}${report.month ? ` | Month: ${String(report.month).padStart(2, "0")}` : ""}`);
+	doc.fontSize(11).text(`Range: ${report.fromDate} to ${report.toDate}`);
+	doc.moveDown(0.4);
+	doc.fontSize(11).text(
+		`Total: ${report.totals.total} | Approved: ${report.totals.approved} | Pending: ${report.totals.pending} | Rejected: ${report.totals.rejected}`
+	);
+	doc.moveDown(0.8);
+
+	if (!report.bookings.length) {
+		doc.fontSize(11).text("No bookings found for selected period.");
+		doc.end();
+		return;
+	}
+
+	report.bookings.forEach((booking, index) => {
+		const line = `${index + 1}. ${booking.date} ${booking.start}-${booking.end} | ${booking.title} | ${booking.spaceName} | ${booking.status}`;
+		doc.fontSize(10).text(line);
+		if (booking.requestedBy) {
+			doc.fontSize(9).fillColor("#555555").text(`Requested by: ${booking.requestedBy}`).fillColor("#000000");
+		}
+		doc.moveDown(0.3);
+	});
+
+	doc.end();
+});
+
 module.exports = {
 	getBookings,
 	getBookingById,
 	createBooking,
 	updateBookingStatus,
 	deleteBooking,
+	getBookingReport,
+	downloadBookingReportPdf,
 };

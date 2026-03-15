@@ -4,6 +4,8 @@ const bookingController = require("../controllers/booking.controller");
 const router = express.Router();
 
 router.get("/", bookingController.getBookings);
+router.get("/report", bookingController.getBookingReport);
+router.get("/report/pdf", bookingController.downloadBookingReportPdf);
 router.get("/:id", bookingController.getBookingById);
 router.post("/", bookingController.createBooking);
 router.patch("/:id/status", bookingController.updateBookingStatus);

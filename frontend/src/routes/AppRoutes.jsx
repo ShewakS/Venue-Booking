@@ -7,6 +7,7 @@ import StudentDashboard from "../pages/StudentDashboard";
 import BookingPage from "../pages/BookingPage";
 import SpacePage from "../pages/SpacePage";
 import CalendarPage from "../pages/CalendarPage";
+import BookingReportPage from "../pages/BookingReportPage";
 import NotFound from "../pages/NotFound";
 import DashboardLayout from "../components/layout/DashboardLayout";
 import ProtectedRoute from "./ProtectedRoute";
@@ -73,6 +74,16 @@ const AppRoutes = () => {
           <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.FACULTY, ROLES.COORDINATOR]}>
             <DashboardLayout>
               <CalendarPage />
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={PATHS.BOOKING_REPORT}
+        element={
+          <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+            <DashboardLayout>
+              <BookingReportPage />
             </DashboardLayout>
           </ProtectedRoute>
         }

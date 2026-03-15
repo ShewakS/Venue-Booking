@@ -50,20 +50,34 @@ const SidebarIcon = ({ name }) => {
     );
   }
 
-  return (
-    <svg {...common}>
-      <path d="M8 2v4" />
-      <path d="M16 2v4" />
-      <rect x="3" y="4" width="18" height="18" rx="2" />
-      <path d="M3 10h18" />
-      <path d="M8 14h.01" />
-      <path d="M12 14h.01" />
-      <path d="M16 14h.01" />
-      <path d="M8 18h.01" />
-      <path d="M12 18h.01" />
-      <path d="M16 18h.01" />
-    </svg>
-  );
+  if (name === "calendar") {
+    return (
+      <svg {...common}>
+        <path d="M8 2v4" />
+        <path d="M16 2v4" />
+        <rect x="3" y="4" width="18" height="18" rx="2" />
+        <path d="M3 10h18" />
+        <path d="M8 14h.01" />
+        <path d="M12 14h.01" />
+        <path d="M16 14h.01" />
+        <path d="M8 18h.01" />
+        <path d="M12 18h.01" />
+        <path d="M16 18h.01" />
+      </svg>
+    );
+  }
+
+  if (name === "report") {
+    return (
+      <svg {...common}>
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+        <polyline points="14 2 14 8 20 8" />
+        <line x1="16" y1="13" x2="8" y2="13" />
+        <line x1="16" y1="17" x2="8" y2="17" />
+        <polyline points="10 9 9 9 8 9" />
+      </svg>
+    );
+  }
 };
 
 const Sidebar = () => {
@@ -103,6 +117,12 @@ const Sidebar = () => {
       icon: "calendar",
       path: PATHS.CALENDAR,
       roles: [ROLES.ADMIN, ROLES.FACULTY, ROLES.COORDINATOR],
+    },
+    {
+      label: "Report",
+      icon: "report",
+      path: PATHS.BOOKING_REPORT,
+      roles: [ROLES.ADMIN],
     },
   ];
 

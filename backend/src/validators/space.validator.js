@@ -1,5 +1,23 @@
 const asString = (value) => (typeof value === "string" ? value.trim() : "");
 const asNumber = (value) => (typeof value === "number" ? value : Number(value));
+const IMAGE_DATA_URL_REGEX = /^data:image\/[a-zA-Z0-9.+-]+;base64,[A-Za-z0-9+/=\r\n]+$/;
+
+const isValidImageUrl = (value) => {
+	if (!value) {
+		return true;
+	}
+
+	if (IMAGE_DATA_URL_REGEX.test(value)) {
+		return true;
+	}
+
+	try {
+		const parsed = new URL(value);
+		return parsed.protocol === "http:" || parsed.protocol === "https:";
+	} catch {
+		return false;
+	}
+};
 
 const validateCreateSpace = (payload = {}) => {
 	const errors = [];
@@ -7,6 +25,7 @@ const validateCreateSpace = (payload = {}) => {
 	const name = asString(payload.name);
 	const type = asString(payload.type);
 	const capacity = asNumber(payload.capacity);
+	const imageUrl = asString(payload.imageUrl);
 
 	if (!name) {
 		errors.push("name is required");
@@ -26,6 +45,12 @@ const validateCreateSpace = (payload = {}) => {
 		errors.push("capacity must be less than or equal to 5000");
 	}
 
+	if (imageUrl.length > 3_000_000) {
+		errors.push("imageUrl is too large");
+	} else if (!isValidImageUrl(imageUrl)) {
+		errors.push("imageUrl must be a valid http(s) URL or image data URL");
+	}
+
 	return {
 		isValid: errors.length === 0,
 		errors,
@@ -33,6 +58,7 @@ const validateCreateSpace = (payload = {}) => {
 			name,
 			type,
 			capacity,
+			imageUrl: imageUrl || null,
 		},
 	};
 };

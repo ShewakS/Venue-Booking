@@ -40,6 +40,18 @@ const connectDB = async () => {
 		// Sync only creates missing tables/columns according to model metadata.
 		// No mock/seed data is inserted automatically.
 		await sequelize.sync({ alter: false });
+
+		const queryInterface = sequelize.getQueryInterface();
+		const spaceTable = await queryInterface.describeTable("spaces");
+
+		if (!spaceTable.image_url) {
+			await queryInterface.addColumn("spaces", "image_url", {
+				type: Sequelize.TEXT,
+				allowNull: true,
+			});
+			logger.info("Added spaces.image_url column");
+		}
+
 		logger.info("Database tables synced");
 	} catch (error) {
 		logger.error("PostgreSQL connection failed", error);

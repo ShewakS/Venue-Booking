@@ -92,7 +92,12 @@ const updateSpace = async (payload = {}) => {
 		throw ApiError.conflict("Another space with the same name already exists");
 	}
 
-	await existing.update({ name: value.name, type: value.type, capacity: value.capacity });
+	await existing.update({
+		name: value.name,
+		type: value.type,
+		capacity: value.capacity,
+		imageUrl: value.imageUrl,
+	});
 	return toPlain(existing);
 };
 

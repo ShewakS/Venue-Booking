@@ -5,6 +5,14 @@ import Button from "../components/common/Button";
 import CalendarView from "../components/calendar/CalendarView";
 import StatCard from "../components/common/StatCard";
 
+const fileToDataUrl = (file) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(typeof reader.result === "string" ? reader.result : "");
+    reader.onerror = () => reject(new Error("Failed to read file"));
+    reader.readAsDataURL(file);
+  });
+
 const AdminDashboard = () => {
   const {
     spaces,
@@ -18,7 +26,7 @@ const AdminDashboard = () => {
     setTimetableOverride,
   } = useData();
   const [editingId, setEditingId] = useState(null);
-  const [form, setForm] = useState({ name: "", type: "", capacity: "" });
+  const [form, setForm] = useState({ name: "", type: "", capacity: "", imageUrl: "" });
   const [formError, setFormError] = useState("");
 
   const totals = useMemo(
@@ -31,7 +39,7 @@ const AdminDashboard = () => {
   );
 
   const resetForm = () => {
-    setForm({ name: "", type: "", capacity: "" });
+    setForm({ name: "", type: "", capacity: "", imageUrl: "" });
     setEditingId(null);
   };
 
@@ -41,7 +49,37 @@ const AdminDashboard = () => {
       name: space.name,
       type: space.type,
       capacity: String(space.capacity),
+      imageUrl: space.imageUrl || "",
     });
+  };
+
+  const handleImageFileChange = async (event) => {
+    const selectedFile = event.target.files?.[0];
+
+    if (!selectedFile) {
+      return;
+    }
+
+    if (!selectedFile.type.startsWith("image/")) {
+      setFormError("Please upload a valid image file.");
+      return;
+    }
+
+    const maxSize = 2 * 1024 * 1024;
+    if (selectedFile.size > maxSize) {
+      setFormError("Image size must be 2 MB or less.");
+      return;
+    }
+
+    try {
+      const dataUrl = await fileToDataUrl(selectedFile);
+      setForm((prev) => ({ ...prev, imageUrl: dataUrl }));
+      setFormError("");
+    } catch {
+      setFormError("Unable to read selected image.");
+    } finally {
+      event.target.value = "";
+    }
   };
 
   const handleSubmit = async (event) => {
@@ -53,6 +91,7 @@ const AdminDashboard = () => {
       name: form.name.trim(),
       type: form.type.trim(),
       capacity: Number(form.capacity),
+      imageUrl: form.imageUrl || null,
     };
 
     if (!payload.name || !payload.type || !payload.capacity) {
@@ -85,7 +124,7 @@ const AdminDashboard = () => {
 
       <div className="card-grid">
         <div className="card">
-          <h3 style={{ marginTop: 0 }}>Add Space</h3>
+          <h3 style={{ marginTop: 0 }}>{editingId ? "Edit Space" : "Add Space"}</h3>
           <form onSubmit={handleSubmit} style={{ display: "grid", gap: "12px" }}>
             <label className="input-field" htmlFor="spaceName">
               <span>Space Name</span>
@@ -115,8 +154,27 @@ const AdminDashboard = () => {
                 onChange={(event) => setForm({ ...form, capacity: event.target.value })}
               />
             </label>
+            <label className="input-field" htmlFor="spaceImage">
+              <span>Venue Image</span>
+              <input id="spaceImage" type="file" accept="image/*" onChange={handleImageFileChange} />
+              <small style={{ color: "#6b7280" }}>Accepted: image files up to 2 MB</small>
+            </label>
+            {form.imageUrl ? (
+              <div style={{ display: "grid", gap: "8px" }}>
+                <img src={form.imageUrl} alt="Venue preview" className="space-form-preview" />
+                <div>
+                  <Button
+                    className="secondary"
+                    type="button"
+                    onClick={() => setForm((prev) => ({ ...prev, imageUrl: "" }))}
+                  >
+                    Remove Image
+                  </Button>
+                </div>
+              </div>
+            ) : null}
             <div style={{ display: "flex", gap: "12px" }}>
-              <Button type="submit">Add Space</Button>
+              <Button type="submit">{editingId ? "Update Space" : "Add Space"}</Button>
               {editingId ? (
                 <Button className="secondary" type="button" onClick={resetForm}>
                   Cancel
@@ -146,6 +204,11 @@ const AdminDashboard = () => {
                 >
                   <div>
                     <strong>{space.name}</strong>
+                    {space.imageUrl ? (
+                      <div style={{ marginTop: "8px" }}>
+                        <img src={space.imageUrl} alt={`${space.name} venue`} className="space-list-thumb" />
+                      </div>
+                    ) : null}
                     <div style={{ fontSize: "12px", color: "#5b6475" }}>
                       {space.type} • {space.capacity} capacity
                     </div>

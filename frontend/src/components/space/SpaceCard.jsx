@@ -8,6 +8,11 @@ const SpaceCard = ({ space }) => {
 
   return (
     <div className="card">
+      {space.imageUrl ? (
+        <div className="space-card-image-wrap">
+          <img src={space.imageUrl} alt={`${space.name} venue`} className="space-card-image" />
+        </div>
+      ) : null}
       <h4>{space.name}</h4>
       <p style={{ color: "#5b6475" }}>{space.type}</p>
       <p>Capacity: {space.capacity}</p>

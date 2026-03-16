@@ -39,6 +39,20 @@ const Space = sequelize.define(
 				max: 5000,
 			},
 		},
+		imageUrl: {
+			type: DataTypes.TEXT,
+			allowNull: true,
+			field: "image_url",
+			set(value) {
+				if (typeof value === "string") {
+					const trimmed = value.trim();
+					this.setDataValue("imageUrl", trimmed || null);
+					return;
+				}
+
+				this.setDataValue("imageUrl", value || null);
+			},
+		},
 	},
 	{
 		tableName: "spaces",

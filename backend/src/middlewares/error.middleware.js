@@ -2,6 +2,15 @@ const ApiError = require("../utils/ApiError");
 const logger = require("../utils/logger");
 
 const errorHandler = (error, req, res, next) => {
+	if (error?.type === "entity.too.large") {
+		res.status(413).json({
+			success: false,
+			message: "Request payload is too large. Please upload a smaller image.",
+			errors: [],
+		});
+		return;
+	}
+
 	const normalizedError =
 		error instanceof ApiError
 			? error

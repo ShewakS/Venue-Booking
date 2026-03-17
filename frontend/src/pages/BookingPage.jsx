@@ -13,15 +13,16 @@ const BookingPage = () => {
   return (
     <div style={{ display: "grid", gap: "16px" }}>
       <h2>Bookings</h2>
-      {isOrganizer ? null : (
+      {isOrganizer ? (
+        <BookingList
+          bookings={bookings}
+          spaces={spaces}
+          onStatusChange={updateBookingStatus}
+          showActions
+        />
+      ) : (
         <BookingForm spaces={spaces} bookings={bookings} timetable={timetable} onAddBooking={addBooking} />
       )}
-      <BookingList
-        bookings={bookings}
-        spaces={spaces}
-        onStatusChange={isOrganizer ? updateBookingStatus : undefined}
-        showActions={isOrganizer}
-      />
     </div>
   );
 };

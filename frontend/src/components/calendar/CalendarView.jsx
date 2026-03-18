@@ -2,6 +2,11 @@ import React, { useMemo, useState } from "react";
 import { useData } from "../../context/DataContext";
 import { getDayAbbrev, isTimeOverlapping } from "../../utils/time";
 
+const STATUS_OPTIONS = [
+  { value: "academic", label: "Academic Reserved" },
+  { value: "available", label: "Available" },
+];
+
 const buildSlots = () => {
   const slots = [];
   for (let hour = 8; hour <= 18; hour += 1) {
@@ -31,6 +36,7 @@ const formatDateInput = (date) => {
 
 const CalendarView = ({ editable = false, overrides = [], onSetOverride }) => {
   const { spaces, bookings, timetable } = useData();
+  const [selectedEditStatus, setSelectedEditStatus] = useState("academic");
   const [selectedDate, setSelectedDate] = useState(() => {
     if (!timetable.length) {
       return formatDateInput(new Date());
@@ -54,6 +60,9 @@ const CalendarView = ({ editable = false, overrides = [], onSetOverride }) => {
     }
     if (override?.status === "booked") {
       return "booked";
+    }
+    if (override?.status === "academic") {
+      return "academic";
     }
 
     const academic = timetable.some((entry) => {
@@ -88,26 +97,9 @@ const CalendarView = ({ editable = false, overrides = [], onSetOverride }) => {
     return "available";
   };
 
-  const handleSlotClick = (spaceId, slot, status) => {
+  const handleSlotClick = (spaceId, slot) => {
     if (!editable || !onSetOverride) {
       return;
-    }
-
-    const existing = overrides.find(
-      (entry) =>
-        entry.spaceId === spaceId &&
-        entry.date === selectedDate &&
-        entry.start === slot.start &&
-        entry.end === slot.end
-    );
-
-    let nextStatus = "booked";
-    if (existing?.status === "booked") {
-      nextStatus = "available";
-    } else if (existing?.status === "available") {
-      nextStatus = "booked";
-    } else if (status === "booked") {
-      nextStatus = "available";
     }
 
     onSetOverride({
@@ -115,7 +107,7 @@ const CalendarView = ({ editable = false, overrides = [], onSetOverride }) => {
       date: selectedDate,
       start: slot.start,
       end: slot.end,
-      status: nextStatus,
+      status: selectedEditStatus,
     });
   };
 
@@ -126,24 +118,42 @@ const CalendarView = ({ editable = false, overrides = [], onSetOverride }) => {
           <h3>Space Availability</h3>
           <p className="muted">
             Academic timetable and booking visibility by time slot.
-            {editable ? " Click any slot to toggle booked/available." : ""}
+            {editable ? " Choose a status and click any slot to apply it." : ""}
             {editable && !hasAcademicSlots ? " No academic slots for this date." : ""}
           </p>
         </div>
-        <label className="input-field" htmlFor="calendarDate">
-          <span>Date</span>
-          <input
-            id="calendarDate"
-            type="date"
-            value={selectedDate}
-            onChange={(event) => setSelectedDate(event.target.value)}
-          />
-        </label>
+        <div style={{ display: "flex", gap: "10px", alignItems: "flex-end", flexWrap: "wrap" }}>
+          {editable ? (
+            <label className="input-field" htmlFor="calendarSlotStatus">
+              <span>Mark Slot As</span>
+              <select
+                id="calendarSlotStatus"
+                value={selectedEditStatus}
+                onChange={(event) => setSelectedEditStatus(event.target.value)}
+              >
+                {STATUS_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
+
+          <label className="input-field" htmlFor="calendarDate">
+            <span>Date</span>
+            <input
+              id="calendarDate"
+              type="date"
+              value={selectedDate}
+              onChange={(event) => setSelectedDate(event.target.value)}
+            />
+          </label>
+        </div>
       </div>
 
       <div className="legend">
         <span className="legend-item academic">Academic Reserved</span>
-        <span className="legend-item pending">Pending Booking</span>
         <span className="legend-item booked">Approved Booking</span>
         <span className="legend-item available">Available</span>
       </div>
@@ -164,12 +174,12 @@ const CalendarView = ({ editable = false, overrides = [], onSetOverride }) => {
                 <div
                   key={`${space.id}-${slot.label}`}
                   className={`slot-cell ${status}${editable ? " interactive" : ""}`}
-                  onClick={() => handleSlotClick(space.id, slot, status)}
+                  onClick={() => handleSlotClick(space.id, slot)}
                   role={editable ? "button" : undefined}
                   tabIndex={editable ? 0 : undefined}
                   onKeyDown={(event) => {
                     if (event.key === "Enter") {
-                      handleSlotClick(space.id, slot, status);
+                      handleSlotClick(space.id, slot);
                     }
                   }}
                 />

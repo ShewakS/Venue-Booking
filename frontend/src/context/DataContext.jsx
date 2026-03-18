@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useMemo, useState } from "
 import api from "../services/api";
 
 const DataContext = createContext(null);
+const OVERRIDES_STORAGE_KEY = "scsb_timetable_overrides";
 
 const uniqueById = (items) => {
   const map = new Map();
@@ -20,7 +21,15 @@ export const DataProvider = ({ children }) => {
   const [spaces, setSpaces] = useState([]);
   const [bookings, setBookings] = useState([]);
   const [timetable, setTimetable] = useState([]);
-  const [timetableOverrides, setTimetableOverrides] = useState([]);
+  const [timetableOverrides, setTimetableOverrides] = useState(() => {
+    try {
+      const raw = window.localStorage.getItem(OVERRIDES_STORAGE_KEY);
+      const parsed = raw ? JSON.parse(raw) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  });
 
   const loadSpaces = async () => {
     try {
@@ -67,6 +76,14 @@ export const DataProvider = ({ children }) => {
       window.removeEventListener("focus", handleFocus);
     };
   }, []);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(OVERRIDES_STORAGE_KEY, JSON.stringify(timetableOverrides));
+    } catch {
+      // ignore storage write failures
+    }
+  }, [timetableOverrides]);
 
   const addSpace = async (space) => {
     try {

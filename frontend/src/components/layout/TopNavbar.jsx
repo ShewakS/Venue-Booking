@@ -1,7 +1,7 @@
 import React from "react";
 import Button from "../common/Button";
 import { useAuth } from "../../context/AuthContext";
-import logo from "./SECE Logo.png";
+import { appLogoImage } from "../../assets/images";
 
 const TopNavbar = () => {
   const { user, logout } = useAuth();
@@ -11,7 +11,7 @@ const TopNavbar = () => {
   return (
     <header className="navbar">
       <div className="navbar-brand">
-        <img src={logo} alt="SECE Logo" className="navbar-logo" />
+        <img src={appLogoImage} alt="SECE Logo" className="navbar-logo" />
         <div className="navbar-brand-text">
           <p className="navbar-subtitle"><strong>Venue Booking System</strong></p>
         </div>

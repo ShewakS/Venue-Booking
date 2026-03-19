@@ -4,6 +4,7 @@ import InputField from "../components/common/InputField";
 import Button from "../components/common/Button";
 import { useAuth } from "../context/AuthContext";
 import { ROLES, roleHomePath } from "../utils/roles";
+import { loginHeroImage } from "../assets/images";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -48,86 +49,96 @@ const Login = () => {
   };
 
   return (
-    <div className="login-shell">
-      <form className="card login-card" onSubmit={handleSubmit}>
-        <h4>{mode === "register" ? "Create Account" : "Smart Campus Login"}</h4><br></br>
-        <div style={{ display: "grid", gap: "12px" }}>
-          {mode === "register" ? (
-            <InputField
-              id="name"
-              label="Name"
-              placeholder="Enter your name"
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-            />
-          ) : null}
+    <div className="login-shell" style={{ backgroundImage: `url('${loginHeroImage}')` }}>
+      <div className="login-layout card">
+        <div className="login-content">
+          <div className="login-content-head">
+            <h3>Sri Eshwar College of Engineering</h3>
+            <span className="login-accent-line" />
+            <p className="muted">Smart Campus Space Booking Portal</p>
+          </div>
 
-          {mode === "register" ? (
-            <InputField
-              id="phone"
-              label="Phone Number"
-              type="tel"
-              placeholder="Enter your mobile number"
-              value={phone}
-              onChange={(event) => setPhone(event.target.value)}
-            />
-          ) : null}
+          <form className="login-form" onSubmit={handleSubmit}>
+            <h4>{mode === "register" ? "Create Account" : "Access Dashboard"}</h4>
 
-          
-          <InputField
-            id="email"
-            label="Email"
-            type="email"
-            placeholder="Enter your email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-          />
+            <div className="login-fields">
+              {mode === "register" ? (
+                <InputField
+                  id="name"
+                  label="Name"
+                  placeholder="Enter your name"
+                  value={name}
+                  onChange={(event) => setName(event.target.value)}
+                />
+              ) : null}
 
-          <InputField
-            id="password"
-            label="Password"
-            type="password"
-            placeholder="Enter password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-          />
+              {mode === "register" ? (
+                <InputField
+                  id="phone"
+                  label="Phone Number"
+                  type="tel"
+                  placeholder="Enter your mobile number"
+                  value={phone}
+                  onChange={(event) => setPhone(event.target.value)}
+                />
+              ) : null}
 
-          {mode === "register" ? (
-            <label className="input-field" htmlFor="role">
-              <span>Role</span>
-              <select id="role" value={role} onChange={(event) => setRole(event.target.value)}>
-                <option value={ROLES.ADMIN}>Admin</option>
-                <option value={ROLES.FACULTY}>Faculty</option>
-                <option value={ROLES.STUDENT}>Student</option>
-              </select>
-            </label>
-          ) : null}
+              <InputField
+                id="email"
+                label="Email"
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+              />
 
-          {mode === "register" ? (
-            <InputField
-              id="roleDescription"
-              label="Role Description"
-              placeholder="Enter your position"
-              value={roleDescription}
-              onChange={(event) => setRoleDescription(event.target.value)}
-            />
-          ) : null}
+              <InputField
+                id="password"
+                label="Password"
+                type="password"
+                placeholder="Enter password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+              />
 
-          <Button type="submit">{mode === "register" ? "Register" : "Login"}</Button>
-          {error ? <p style={{ color: "#c62828", margin: 0 }}>{error}</p> : null}
+              {mode === "register" ? (
+                <label className="input-field" htmlFor="role">
+                  <span>Role</span>
+                  <select id="role" value={role} onChange={(event) => setRole(event.target.value)}>
+                    <option value={ROLES.ADMIN}>Admin</option>
+                    <option value={ROLES.FACULTY}>Faculty</option>
+                    <option value={ROLES.STUDENT}>Student</option>
+                  </select>
+                </label>
+              ) : null}
 
-          <Button
-            type="button"
-            className="secondary"
-            onClick={() => {
-              setError("");
-              setMode((prev) => (prev === "login" ? "register" : "login"));
-            }}
-          >
-            {mode === "login" ?  "Register" : "Login"}
-          </Button>
+              {mode === "register" ? (
+                <InputField
+                  id="roleDescription"
+                  label="Role Description"
+                  placeholder="Enter your position"
+                  value={roleDescription}
+                  onChange={(event) => setRoleDescription(event.target.value)}
+                />
+              ) : null}
+
+              <Button type="submit">{mode === "register" ? "Create Account" : "Access Dashboard"}</Button>
+              {error ? <p style={{ color: "#c62828", margin: 0 }}>{error}</p> : null}
+
+              <Button
+                type="button"
+                className="secondary"
+                onClick={() => {
+                  setError("");
+                  setMode((prev) => (prev === "login" ? "register" : "login"));
+                }}
+              >
+                {mode === "login" ? "Create Account" : "Back to Login"}
+              </Button>
+            </div>
+          </form>
         </div>
-      </form>
+      </div>
     </div>
   );
 };

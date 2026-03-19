@@ -1,6 +1,6 @@
 const { Op } = require("sequelize");
 const ApiError = require("../utils/ApiError");
-const { Booking, Space } = require("../models");
+const { Booking, Space, TimetableOverride } = require("../models");
 const {
 	validateCreateBooking,
 	validateBookingQuery,
@@ -85,6 +85,25 @@ const createBooking = async (payload = {}) => {
 
 	if (conflict) {
 		throw ApiError.conflict("Selected time overlaps with an existing booking");
+	}
+
+	// Check for academic reserved slots — if overlapping, reject immediately
+	const academicOverrides = await TimetableOverride.findAll({
+		where: {
+			spaceId: value.spaceId,
+			date: value.date,
+			status: "academic",
+		},
+	});
+
+	const academicConflict = academicOverrides.find((override) =>
+		hasOverlap(value.start, value.end, override.start, override.end)
+	);
+
+	if (academicConflict) {
+		throw ApiError.conflict(
+			"Selected time slot is reserved for academic activity and cannot be booked"
+		);
 	}
 
 	const booking = await Booking.create({ ...value });

@@ -51,9 +51,20 @@ export const DataProvider = ({ children }) => {
     }
   };
 
+  const loadTimetableOverrides = async () => {
+    try {
+      const response = await api.get("/timetable-overrides");
+      const overrides = Array.isArray(response?.data?.data) ? response.data.data : [];
+      setTimetableOverrides(overrides);
+    } catch {
+      setTimetableOverrides([]);
+    }
+  };
+
   useEffect(() => {
     loadSpaces();
     loadBookings();
+    loadTimetableOverrides();
     setTimetable([]);
   }, []);
 
@@ -62,11 +73,13 @@ export const DataProvider = ({ children }) => {
     const intervalId = setInterval(() => {
       loadSpaces();
       loadBookings();
+      loadTimetableOverrides();
     }, 10000);
 
     const handleFocus = () => {
       loadSpaces();
       loadBookings();
+      loadTimetableOverrides();
     };
 
     window.addEventListener("focus", handleFocus);
@@ -84,6 +97,38 @@ export const DataProvider = ({ children }) => {
       // ignore storage write failures
     }
   }, [timetableOverrides]);
+
+  const setTimetableOverrideAsync = async (override) => {
+    try {
+      if (override.status) {
+        // Create override on backend
+        await api.post("/timetable-overrides", override);
+      } else {
+        // Delete would require tracking override IDs, so we'll just update locally
+      }
+    } catch (error) {
+      console.error("Failed to sync timetable override", error);
+    }
+
+    // Always update local state
+    setTimetableOverrides((prev) => {
+      const rest = prev.filter(
+        (item) =>
+          !(
+            item.spaceId === override.spaceId &&
+            item.date === override.date &&
+            item.start === override.start &&
+            item.end === override.end
+          )
+      );
+
+      if (!override.status) {
+        return rest;
+      }
+
+      return [...rest, override];
+    });
+  };
 
   const addSpace = async (space) => {
     try {
@@ -133,8 +178,9 @@ export const DataProvider = ({ children }) => {
       }
 
       return created;
-    } catch {
-      return null;
+    } catch (error) {
+      const message = error?.response?.data?.message || error?.message || "Unable to save booking";
+      throw new Error(message);
     }
   };
 
@@ -164,25 +210,7 @@ export const DataProvider = ({ children }) => {
       deleteSpace,
       addBooking,
       updateBookingStatus,
-      setTimetableOverride: (override) => {
-        setTimetableOverrides((prev) => {
-          const rest = prev.filter(
-            (item) =>
-              !(
-                item.spaceId === override.spaceId &&
-                item.date === override.date &&
-                item.start === override.start &&
-                item.end === override.end
-              )
-          );
-
-          if (!override.status) {
-            return rest;
-          }
-
-          return [...rest, override];
-        });
-      },
+      setTimetableOverride: setTimetableOverrideAsync,
     }),
     [spaces, bookings, timetable, timetableOverrides]
   );

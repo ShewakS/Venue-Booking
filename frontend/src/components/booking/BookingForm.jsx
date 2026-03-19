@@ -92,37 +92,41 @@ const BookingForm = ({ spaces, bookings, timetable, onAddBooking }) => {
       return;
     }
 
-    const created = await onAddBooking({
-      title: form.title,
-      type: form.type,
-      spaceId: Number(form.spaceId),
-      date: form.date,
-      start: form.start,
-      end: form.end,
-      participants: Number(form.participants),
-      organizedBy: form.organizedBy,
-      notes: form.notes,
-      requestedBy: user?.name || "Campus User",
-      requestedRole: role,
-    });
+    try {
+      const created = await onAddBooking({
+        title: form.title,
+        type: form.type,
+        spaceId: Number(form.spaceId),
+        date: form.date,
+        start: form.start,
+        end: form.end,
+        participants: Number(form.participants),
+        organizedBy: form.organizedBy,
+        notes: form.notes,
+        requestedBy: user?.name || "Campus User",
+        requestedRole: role,
+      });
 
-    if (!created) {
-      setErrors(["Unable to save booking. Please try again."]);
-      return;
-    }
+      if (!created) {
+        setErrors(["Unable to save booking. Please try again."]);
+        return;
+      }
 
-    setForm({
-      title: "",
-      type: "Seminar",
-      spaceId: form.spaceId,
-      date: "",
-      start: "",
-      end: "",
+      setForm({
+        title: "",
+        type: "Seminar",
+        spaceId: form.spaceId,
+        date: "",
+        start: "",
+        end: "",
       participants: "",
       organizedBy: "",
       notes: "",
     });
     setErrors([]);
+      } catch (error) {
+        setErrors([error.message || "Unable to save booking. Please try again."]);
+      }
   };
 
   return (

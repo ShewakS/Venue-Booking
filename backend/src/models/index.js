@@ -7,5 +7,6 @@
 const User = require("./User");
 const Space = require("./Space");
 const Booking = require("./Booking");
+const TimetableOverride = require("./TimetableOverride");
 
-module.exports = { User, Space, Booking };
+module.exports = { User, Space, Booking, TimetableOverride };

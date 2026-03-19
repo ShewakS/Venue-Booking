@@ -155,6 +155,7 @@ const CalendarView = ({ editable = false, overrides = [], onSetOverride }) => {
       <div className="legend">
         <span className="legend-item academic">Academic Reserved</span>
         <span className="legend-item booked">Approved Booking</span>
+        <span className="legend-item pending">Pending Request</span>
         <span className="legend-item available">Available</span>
       </div>
 

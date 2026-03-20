@@ -1,14 +1,16 @@
 # Venue Booking Backend
 
-Express + MongoDB backend for the Venue Booking project.
+Express + PostgreSQL backend for the Venue Booking project.
 
-## Setup
+## Local Setup
 
 1. Install dependencies:
 	- `npm install`
 2. Create environment file:
 	- copy `.env.example` to `.env`
-3. Ensure MongoDB is running locally (or provide a remote URI in `MONGO_URI`).
+3. Configure PostgreSQL via either:
+	- `DATABASE_URL` (recommended), or
+	- `PG_HOST`, `PG_PORT`, `PG_DATABASE`, `PG_USER`, `PG_PASSWORD`
 4. Start server:
 	- `npm run dev`
 
@@ -27,7 +29,18 @@ Express + MongoDB backend for the Venue Booking project.
 - Bookings: `/api/bookings`
 - Users: `/api/users`
 
-## Frontend Integration Notes
+## Railway Deployment
 
-- Backend CORS is enabled for `CORS_ORIGIN` (default `http://localhost:3000`).
-- Frontend files are unchanged as requested.
+This repository includes a root [railway.json](../railway.json) that builds and starts the backend from the monorepo layout.
+
+Required Railway environment variables:
+
+- `DATABASE_URL` (from Railway PostgreSQL service)
+- `JWT_SECRET`
+- `JWT_EXPIRES_IN` (optional, defaults to `7d`)
+- `CORS_ORIGIN` (single URL or comma-separated list)
+
+Example `CORS_ORIGIN`:
+
+- `https://your-frontend.vercel.app`
+- `https://your-frontend.vercel.app,https://your-app.up.railway.app`

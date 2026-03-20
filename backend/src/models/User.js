@@ -49,6 +49,11 @@ const User = sequelize.define(
 			type: DataTypes.ENUM("admin", "faculty", "student", "coordinator"),
 			allowNull: false,
 		},
+		status: {
+			type: DataTypes.ENUM("pending", "active"),
+			allowNull: false,
+			defaultValue: "pending",
+		},
 	},
 	{
 		tableName: "users",

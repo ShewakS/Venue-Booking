@@ -10,9 +10,14 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
+    const token = localStorage.getItem(authTokenKey);
     if (saved) {
       try {
-        setUser(JSON.parse(saved));
+        if (token) {
+          setUser(JSON.parse(saved));
+        } else {
+          localStorage.removeItem(STORAGE_KEY);
+        }
       } catch {
         localStorage.removeItem(STORAGE_KEY);
       }
@@ -54,15 +59,11 @@ export const AuthProvider = ({ children }) => {
     });
     const payload = response?.data?.data || {};
 
-    if (payload.token) {
-      localStorage.setItem(authTokenKey, payload.token);
-    }
+    // Registration must never authenticate immediately.
+    localStorage.removeItem(authTokenKey);
+    setUser(null);
 
-    if (payload.user) {
-      setUser(payload.user);
-    }
-
-    return payload.user;
+    return payload;
   };
 
   const logout = () => {

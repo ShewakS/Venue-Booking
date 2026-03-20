@@ -31,6 +31,10 @@ const login = async (payload = {}) => {
 		throw ApiError.unauthorized("Account not found. Please register first.");
 	}
 
+	if (user.status === "pending") {
+		throw ApiError.unauthorized("Your account is pending admin approval. Please wait for admin to approve your registration.");
+	}
+
 	let isPasswordValid = false;
 
 	if (isBcryptHash(user.password)) {
@@ -75,11 +79,13 @@ const register = async (payload = {}) => {
 		role: value.role,
 		phone: value.phone,
 		roleDescription: value.roleDescription,
+		status: "pending",
 	});
 
 	return {
-		token: createToken(user),
+		message: "Registration successful. Your account is pending admin approval.",
 		user: sanitizeUser(user),
+		isPending: true,
 	};
 };
 
@@ -101,9 +107,40 @@ const verifyToken = (token) => {
 	}
 };
 
+const getPendingUsers = async () => {
+	const users = await User.findAll({ where: { status: "pending" } });
+	return users.map(sanitizeUser);
+};
+
+const approveUser = async (userId) => {
+	const user = await User.findByPk(userId);
+	if (!user) {
+		throw ApiError.notFound("User not found");
+	}
+
+	user.status = "active";
+	await user.save();
+
+	return sanitizeUser(user);
+};
+
+const rejectUser = async (userId) => {
+	const user = await User.findByPk(userId);
+	if (!user) {
+		throw ApiError.notFound("User not found");
+	}
+
+	await user.destroy();
+
+	return { message: "User registration rejected and deleted" };
+};
+
 module.exports = {
 	login,
 	register,
 	getCurrentUser,
 	verifyToken,
+	getPendingUsers,
+	approveUser,
+	rejectUser,
 };

@@ -21,6 +21,7 @@ export const DataProvider = ({ children }) => {
   const [spaces, setSpaces] = useState([]);
   const [bookings, setBookings] = useState([]);
   const [timetable, setTimetable] = useState([]);
+  const [pendingUsers, setPendingUsers] = useState([]);
   const [timetableOverrides, setTimetableOverrides] = useState(() => {
     try {
       const raw = window.localStorage.getItem(OVERRIDES_STORAGE_KEY);
@@ -61,10 +62,41 @@ export const DataProvider = ({ children }) => {
     }
   };
 
+  const loadPendingUsers = async () => {
+    try {
+      const response = await api.get("/auth/pending-users");
+      const users = Array.isArray(response?.data?.data) ? response.data.data : [];
+      setPendingUsers(users);
+    } catch {
+      setPendingUsers([]);
+    }
+  };
+
+  const approveUser = async (userId) => {
+    try {
+      await api.patch(`/auth/approve/${userId}`);
+      await loadPendingUsers();
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const rejectUser = async (userId) => {
+    try {
+      await api.delete(`/auth/reject/${userId}`);
+      await loadPendingUsers();
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
   useEffect(() => {
     loadSpaces();
     loadBookings();
     loadTimetableOverrides();
+    loadPendingUsers();
     setTimetable([]);
   }, []);
 
@@ -74,12 +106,14 @@ export const DataProvider = ({ children }) => {
       loadSpaces();
       loadBookings();
       loadTimetableOverrides();
+      loadPendingUsers();
     }, 10000);
 
     const handleFocus = () => {
       loadSpaces();
       loadBookings();
       loadTimetableOverrides();
+      loadPendingUsers();
     };
 
     window.addEventListener("focus", handleFocus);
@@ -205,14 +239,17 @@ export const DataProvider = ({ children }) => {
       bookings,
       timetable,
       timetableOverrides,
+      pendingUsers,
       addSpace,
       updateSpace,
       deleteSpace,
       addBooking,
       updateBookingStatus,
+      approveUser,
+      rejectUser,
       setTimetableOverride: setTimetableOverrideAsync,
     }),
-    [spaces, bookings, timetable, timetableOverrides]
+    [spaces, bookings, timetable, timetableOverrides, pendingUsers]
   );
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

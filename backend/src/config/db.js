@@ -72,6 +72,36 @@ const connectDB = async () => {
 			logger.info("Added bookings.updated_at column");
 		}
 
+		const userTable = await queryInterface.describeTable("users");
+
+		if (!userTable.phone) {
+			await queryInterface.addColumn("users", "phone", {
+				type: Sequelize.STRING(20),
+				allowNull: false,
+				defaultValue: "",
+			});
+			logger.info("Added users.phone column");
+		}
+
+		if (!userTable.role_description) {
+			await queryInterface.addColumn("users", "role_description", {
+				type: Sequelize.STRING(120),
+				allowNull: false,
+				defaultValue: "",
+			});
+			logger.info("Added users.role_description column");
+		}
+
+		if (!userTable.status) {
+			await queryInterface.addColumn("users", "status", {
+				type: Sequelize.ENUM("pending", "active"),
+				allowNull: false,
+				// Existing users should stay login-capable after migration.
+				defaultValue: "active",
+			});
+			logger.info("Added users.status column");
+		}
+
 		// Ensure timetable_overrides table exists
 		const tableList = await queryInterface.showAllTables();
 		if (!tableList.includes("timetable_overrides")) {

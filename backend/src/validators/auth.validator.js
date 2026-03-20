@@ -61,6 +61,8 @@ const validateRegister = (payload = {}) => {
 		errors.push("email is required");
 	} else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
 		errors.push("email must be a valid email address");
+	} else if (!email.endsWith("@sece.ac.in")) {
+		errors.push("email must end with @sece.ac.in");
 	}
 
 	if (!password) {

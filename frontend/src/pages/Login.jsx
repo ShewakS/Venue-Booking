@@ -24,9 +24,15 @@ const Login = () => {
     try {
       setError("");
 
+      // Validate email domain during registration
+      if (mode === "register" && !email.endsWith("@sece.ac.in")) {
+        setError("Please enter a valid email ending with @sece.ac.in");
+        return;
+      }
+
       let user = null;
       if (mode === "register") {
-        user = await register({
+        const result = await register({
           name: name || "Campus User",
           email,
           password,
@@ -34,6 +40,18 @@ const Login = () => {
           phone,
           roleDescription,
         });
+
+        setError(
+          result?.message ||
+            "Registration submitted. Your account is pending admin approval. Please login after approval."
+        );
+        setMode("login");
+        setName("");
+        setEmail("");
+        setPassword("");
+        setPhone("");
+        setRoleDescription("");
+        return;
       } else {
         user = await login({
           email,
@@ -87,7 +105,7 @@ const Login = () => {
                 id="email"
                 label="Email"
                 type="email"
-                placeholder="Enter your email"
+                placeholder="your.name@sece.ac.in"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
               />

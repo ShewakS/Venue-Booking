@@ -9,7 +9,11 @@ const startListening = (port, retriesLeft = 10) => {
 	});
 
 	server.on("error", (error) => {
-		if (error.code === "EADDRINUSE" && retriesLeft > 0) {
+		// In production, don't retry on port conflicts — fail fast for Railway
+		const isProduction = env.nodeEnv === "production";
+		const shouldRetry = error.code === "EADDRINUSE" && retriesLeft > 0 && !isProduction;
+
+		if (shouldRetry) {
 			const nextPort = port + 1;
 			logger.warn(`Port ${port} is already in use. Retrying on port ${nextPort}.`);
 			startListening(nextPort, retriesLeft - 1);
@@ -24,7 +28,11 @@ const startListening = (port, retriesLeft = 10) => {
 const startServer = async () => {
 	try {
 		await connectDB();
-		startListening(env.port);
+
+		// Railway deployment: prioritize process.env.PORT, then fall back to env.port
+		const PORT = process.env.PORT || env.port || 5000;
+
+		startListening(PORT);
 	} catch (error) {
 		logger.error("Failed to start server", error);
 		process.exit(1);

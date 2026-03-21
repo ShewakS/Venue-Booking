@@ -2,15 +2,22 @@
 
 Express + PostgreSQL backend for the Venue Booking project.
 
+## ⚠️ Security Notice
+
+**Important:** The PostgreSQL credentials were previously exposed in this repository's git history. If you've pulled a version before the security update, **please immediately change your database password** using your hosting provider's dashboard (e.g., Render, Railway).
+
+Never commit `.env` files to version control. The `.env` file is now protected by `.gitignore`.
+
 ## Local Setup
 
 1. Install dependencies:
 	- `npm install`
 2. Create environment file:
 	- copy `.env.example` to `.env`
+	- Fill in the required credentials (DATABASE_URL or individual PG_* variables)
 3. Configure PostgreSQL via either:
-	- `DATABASE_URL` (recommended), or
-	- `PG_HOST`, `PG_PORT`, `PG_DATABASE`, `PG_USER`, `PG_PASSWORD`
+	- `DATABASE_URL` (recommended for production), or
+	- `PG_HOST`, `PG_PORT`, `PG_DATABASE`, `PG_USER`, `PG_PASSWORD` (for local development)
 4. Start server:
 	- `npm run dev`
 

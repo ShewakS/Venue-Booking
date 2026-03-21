@@ -1,9 +1,10 @@
 import axios from "axios";
+import BASE_URL from "../config";
 
 const tokenKey = "scsb_auth_token";
 
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_BASE_URL || "http://localhost:5000/api",
+  baseURL: `${BASE_URL}/api`,
 });
 
 api.interceptors.request.use((config) => {

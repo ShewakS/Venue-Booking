@@ -11,6 +11,7 @@ backend/node_modules/
 backend/.env
 backend/.env.local
 frontend/.env.local
+backup.sql
 
 # Logs
 npm-debug.log*

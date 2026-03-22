@@ -35,6 +35,13 @@ app.get("/health", (req, res) => {
 	res.status(200).json({ success: true, message: "Backend is healthy" });
 });
 
+app.get("/", (req, res) => {
+	res.status(200).json({
+		success: true,
+		message: "Venue Booking API is running",
+	});
+});
+
 app.use("/api", routes);
 
 app.use((req, res, next) => {

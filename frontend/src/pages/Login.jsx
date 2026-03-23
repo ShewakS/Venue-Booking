@@ -140,12 +140,14 @@ const Login = () => {
                 />
               ) : null}
 
-              <Button type="submit">{mode === "register" ? "Create Account" : "Access Dashboard"}</Button>
+              <Button type="submit" className="full-width">
+                {mode === "register" ? "Create Account" : "Access Dashboard"}
+              </Button>
               {error ? <p style={{ color: "#c62828", margin: 0 }}>{error}</p> : null}
 
               <Button
                 type="button"
-                className="secondary"
+                className="secondary full-width"
                 onClick={() => {
                   setError("");
                   setMode((prev) => (prev === "login" ? "register" : "login"));

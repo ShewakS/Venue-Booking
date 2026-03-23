@@ -137,7 +137,7 @@ const BookingReportPage = () => {
 
       {reportData ? (
         <div className="card">
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "8px", marginBottom: "16px" }}>
             <h3 style={{ margin: 0 }}>Results — {periodLabel}</h3>
             <span style={{ fontSize: "13px", color: "#5b6475" }}>
               {reportData.fromDate} to {reportData.toDate}

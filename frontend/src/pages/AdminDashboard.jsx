@@ -178,7 +178,7 @@ const AdminDashboard = () => {
                 </div>
               </div>
             ) : null}
-            <div style={{ display: "flex", gap: "12px" }}>
+            <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
               <Button type="submit">{editingId ? "Update Space" : "Add Space"}</Button>
               {editingId ? (
                 <Button className="secondary" type="button" onClick={resetForm}>
@@ -218,7 +218,7 @@ const AdminDashboard = () => {
                       {space.type} • {space.capacity} capacity
                     </div>
                   </div>
-                  <div style={{ display: "flex", gap: "8px" }}>
+                  <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", justifyContent: "flex-end" }}>
                     <Button onClick={() => handleEdit(space)} style={{ padding: "6px 10px", fontSize: "12px" }}>
                       Edit
                     </Button>
@@ -271,7 +271,7 @@ const AdminDashboard = () => {
                     Phone: {user.phone}
                   </div>
                 </div>
-                <div style={{ display: "flex", gap: "8px" }}>
+                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", justifyContent: "flex-end" }}>
                   <Button
                     onClick={async () => {
                       await approveUser(user.id);

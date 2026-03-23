@@ -41,7 +41,7 @@ const BookingList = ({ bookings, spaces, onStatusChange, showActions = false }) 
                 <StatusBadge status={booking.status} />
               </td>
               {showActions ? (
-                <td style={{ display: "flex", gap: "8px" }}>
+                <td style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
                   <Button
                     onClick={() => onStatusChange(booking.id, "Approved")}
                     disabled={booking.status !== "Pending"}

@@ -80,7 +80,7 @@ const SidebarIcon = ({ name }) => {
   }
 };
 
-const Sidebar = () => {
+const Sidebar = ({ isMobileOpen = false, onClose }) => {
   const { role } = useAuth();
 
   const roleHeader = {
@@ -127,7 +127,13 @@ const Sidebar = () => {
   ];
 
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar${isMobileOpen ? " open" : ""}`}>
+      <div className="sidebar-mobile-top">
+        <span className="sidebar-mobile-title">Navigation</span>
+        <button className="sidebar-close" onClick={onClose} aria-label="Close navigation">
+          ×
+        </button>
+      </div>
       <div className="sidebar-header">
         <div className="sidebar-brand">{header.title}</div>
         <p className="sidebar-subtitle">{header.subtitle}</p>
@@ -139,6 +145,7 @@ const Sidebar = () => {
             <NavLink
               key={link.path}
               to={link.path}
+              onClick={onClose}
               className={({ isActive }) => `sidebar-link${isActive ? " active" : ""}`}
             >
               <span className="sidebar-link-icon">

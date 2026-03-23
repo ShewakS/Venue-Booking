@@ -84,6 +84,10 @@ span {
   border-right: 1px solid rgba(255, 255, 255, 0.06);
 }
 
+.sidebar-mobile-top {
+  display: none;
+}
+
 .sidebar::before {
   content: "";
   position: absolute;
@@ -201,6 +205,27 @@ span {
   top: 0px;
   z-index: 5;
   backdrop-filter: blur(10px);
+}
+
+.mobile-menu-btn {
+  display: none;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.mobile-menu-btn span {
+  width: 16px;
+  height: 2px;
+  border-radius: 999px;
+  background: #ffffff;
 }
 
 .navbar-brand {
@@ -528,6 +553,11 @@ span {
 .button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.button.full-width {
+  width: 100%;
+  justify-content: center;
 }
 
 .button.secondary {
@@ -888,11 +918,56 @@ span {
   }
 
   .sidebar {
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    gap: 12px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: min(84vw, 320px);
+    z-index: 30;
+    transform: translateX(-100%);
+    transition: transform 0.24s ease;
     padding: 14px;
+    gap: 12px;
+    overflow-y: auto;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .sidebar-mobile-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+
+  .sidebar-mobile-title {
+    color: #e8ecfb;
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+
+  .sidebar-close {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.08);
+    color: #f3f6ff;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    border: 0;
+    margin: 0;
+    padding: 0;
+    background: rgba(7, 12, 29, 0.45);
+    z-index: 20;
   }
 
   .sidebar-header {
@@ -900,8 +975,7 @@ span {
   }
 
   .sidebar-nav {
-    flex-direction: row;
-    flex-wrap: wrap;
+    flex-direction: column;
     width: 100%;
   }
 
@@ -912,6 +986,12 @@ span {
 
   .navbar-actions {
     margin-left: auto;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .mobile-menu-btn {
+    display: inline-flex;
   }
 
   .section-header {
@@ -961,8 +1041,19 @@ span {
   }
 
   .navbar-brand {
+    min-width: 0;
+  }
+
+  .navbar-brand {
     font-size: 1.05rem;
     gap: 8px;
+  }
+
+  .navbar-subtitle {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 180px;
   }
 
   .navbar-logo {
@@ -971,11 +1062,6 @@ span {
 
   .card {
     padding: 12px;
-  }
-
-  .button {
-    width: 100%;
-    justify-content: center;
   }
 
   .form-grid {
@@ -1007,6 +1093,14 @@ span {
   .navbar-actions {
     width: 100%;
     justify-content: flex-end;
+    gap: 8px;
+  }
+
+  .navbar-user {
+    max-width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .slot-grid {

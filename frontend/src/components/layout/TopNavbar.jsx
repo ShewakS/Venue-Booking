@@ -3,13 +3,18 @@ import Button from "../common/Button";
 import { useAuth } from "../../context/AuthContext";
 import { appLogoImage } from "../../assets/images";
 
-const TopNavbar = () => {
+const TopNavbar = ({ onMenuClick }) => {
   const { user, logout } = useAuth();
   const roleText =
     user?.role === "coordinator" ? "STUDENT" : (user?.role ? String(user.role).toUpperCase() : "GUEST");
 
   return (
     <header className="navbar">
+      <button className="mobile-menu-btn" onClick={onMenuClick} aria-label="Open navigation menu">
+        <span />
+        <span />
+        <span />
+      </button>
       <div className="navbar-brand">
         <img src={appLogoImage} alt="SECE Logo" className="navbar-logo" />
         <div className="navbar-brand-text">

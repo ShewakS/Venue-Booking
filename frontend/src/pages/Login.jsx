@@ -105,7 +105,7 @@ const Login = () => {
                 id="email"
                 label="Email"
                 type="email"
-                placeholder="your.name@sece.ac.in"
+                placeholder="Enter your sece email"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
               />

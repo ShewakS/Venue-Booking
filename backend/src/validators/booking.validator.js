@@ -33,6 +33,7 @@ const validateCreateBooking = (payload = {}) => {
 	const organizedBy = asString(payload.organizedBy);
 	const notes = asString(payload.notes);
 	const requestedBy = asString(payload.requestedBy);
+	const requestedPhone = asString(payload.requestedPhone);
 	const requestedRoleRaw = asString(payload.requestedRole);
 	const requestedRole = normalizeRequestedRole(payload.requestedRole);
 
@@ -84,6 +85,10 @@ const validateCreateBooking = (payload = {}) => {
 		errors.push("requestedBy must be at most 80 characters long");
 	}
 
+	if (requestedPhone && requestedPhone.length > 20) {
+		errors.push("requestedPhone must be at most 20 characters long");
+	}
+
 	if (requestedRoleRaw && !requestedRole) {
 		errors.push("requestedRole must be one of: admin, faculty, student");
 	}
@@ -102,6 +107,7 @@ const validateCreateBooking = (payload = {}) => {
 			organizedBy,
 			notes,
 			requestedBy,
+			requestedPhone,
 			requestedRole,
 			status: "Pending",
 		},

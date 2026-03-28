@@ -19,6 +19,7 @@ const BookingPage = () => {
           spaces={spaces}
           onStatusChange={updateBookingStatus}
           showActions
+          showRequesterPhone
         />
       ) : (
         <BookingForm spaces={spaces} bookings={bookings} timetable={timetable} onAddBooking={addBooking} />

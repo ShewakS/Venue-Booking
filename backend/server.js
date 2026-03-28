@@ -14,7 +14,7 @@ const startListening = (port, retriesLeft = 10) => {
 		const shouldRetry = error.code === "EADDRINUSE" && retriesLeft > 0 && !isProduction;
 
 		if (shouldRetry) {
-			const nextPort = port + 1;
+			const nextPort = Number(port) + 1;
 			logger.warn(`Port ${port} is already in use. Retrying on port ${nextPort}.`);
 			startListening(nextPort, retriesLeft - 1);
 			return;
@@ -30,7 +30,7 @@ const startServer = async () => {
 		await connectDB();
 
 		// Railway deployment: prioritize process.env.PORT, then fall back to env.port
-		const PORT = process.env.PORT || env.port || 5000;
+		const PORT = Number(process.env.PORT || env.port || 5000);
 
 		startListening(PORT);
 	} catch (error) {

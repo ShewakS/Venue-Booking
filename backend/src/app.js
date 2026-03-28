@@ -10,17 +10,10 @@ const app = express();
 const normalizeOrigin = (origin) => origin.replace(/\/$/, "");
 
 const allowedOrigins = new Set(
-	[
-		"http://localhost:3000",
-		"http://127.0.0.1:3000",
-		"https://venue-booking-z528.vercel.app",
-		...env.corsOrigins,
-	]
+	env.corsOrigins
 		.filter(Boolean)
 		.map((origin) => normalizeOrigin(origin.trim()))
 );
-
-const localhostPattern = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i;
 
 const corsOptions = {
 	origin(origin, callback) {
@@ -32,7 +25,7 @@ const corsOptions = {
 
 		const normalizedOrigin = normalizeOrigin(origin);
 
-		if (localhostPattern.test(normalizedOrigin) || allowedOrigins.has(normalizedOrigin)) {
+		if (allowedOrigins.has(normalizedOrigin)) {
 			callback(null, true);
 			return;
 		}

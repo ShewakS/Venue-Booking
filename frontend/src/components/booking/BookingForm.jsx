@@ -104,6 +104,7 @@ const BookingForm = ({ spaces, bookings, timetable, onAddBooking }) => {
         organizedBy: form.organizedBy,
         notes: form.notes,
         requestedBy: user?.name || "Campus User",
+        requestedPhone: user?.phone || "",
         requestedRole: role,
       });
 

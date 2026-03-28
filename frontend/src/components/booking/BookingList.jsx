@@ -2,7 +2,13 @@ import React from "react";
 import StatusBadge from "../common/StatusBadge";
 import Button from "../common/Button";
 
-const BookingList = ({ bookings, spaces, onStatusChange, showActions = false }) => {
+const BookingList = ({
+  bookings,
+  spaces,
+  onStatusChange,
+  showActions = false,
+  showRequesterPhone = false,
+}) => {
   const spaceLookup = new Map(spaces.map((space) => [space.id, space.name]));
 
   return (
@@ -17,6 +23,7 @@ const BookingList = ({ bookings, spaces, onStatusChange, showActions = false }) 
             <th>Time</th>
             <th>Participants</th>
             <th>Organized By</th>
+            {showRequesterPhone ? <th>Mobile Number</th> : null}
             <th>Status</th>
             {showActions ? <th>Actions</th> : null}
           </tr>
@@ -37,6 +44,7 @@ const BookingList = ({ bookings, spaces, onStatusChange, showActions = false }) 
               </td>
               <td>{booking.participants}</td>
               <td>{booking.organizedBy || "-"}</td>
+              {showRequesterPhone ? <td>{booking.requestedPhone || "-"}</td> : null}
               <td>
                 <StatusBadge status={booking.status} />
               </td>

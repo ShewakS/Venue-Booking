@@ -19,13 +19,10 @@ const AdminDashboard = () => {
     bookings,
     timetable,
     timetableOverrides,
-    pendingUsers,
     addSpace,
     updateSpace,
     deleteSpace,
     updateBookingStatus,
-    approveUser,
-    rejectUser,
     setTimetableOverride,
   } = useData();
   const [editingId, setEditingId] = useState(null);
@@ -37,9 +34,8 @@ const AdminDashboard = () => {
       totalSpaces: spaces.length,
       totalBookings: bookings.length,
       pendingRequests: bookings.filter((booking) => booking.status === "Pending").length,
-      pendingUsers: pendingUsers.length,
     }),
-    [spaces, bookings, pendingUsers]
+    [spaces, bookings]
   );
 
   const resetForm = () => {
@@ -124,7 +120,6 @@ const AdminDashboard = () => {
         <StatCard title="Total Spaces" value={totals.totalSpaces} icon="spaces" tone="blue" />
         <StatCard title="Total Requests" value={totals.totalBookings} icon="bookings" tone="teal" />
         <StatCard title="Pending Requests" value={totals.pendingRequests} icon="pending" tone="amber" />
-        <StatCard title="Pending Users" value={totals.pendingUsers} icon="pending" tone="red" />
       </div>
 
       <div className="card-grid">
@@ -236,65 +231,6 @@ const AdminDashboard = () => {
               ))
             )}
           </div>
-        </div>
-      </div>
-
-      <div className="card">
-        <h3 style={{ marginTop: 0 }}>Pending User Approvals</h3>
-        <div style={{ maxHeight: "400px", overflowY: "auto" }}>
-          {pendingUsers.length === 0 ? (
-            <p style={{ color: "#5b6475", textAlign: "center" }}>No pending users</p>
-          ) : (
-            pendingUsers.map((user) => (
-              <div
-                key={user.id}
-                style={{
-                  padding: "12px",
-                  borderBottom: "1px solid #e5e9f2",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <div>
-                  <strong>{user.name}</strong>
-                  <div style={{ fontSize: "12px", color: "#5b6475" }}>
-                    {user.email}
-                  </div>
-                  <div style={{ fontSize: "12px", color: "#5b6475" }}>
-                    Role: {user.role} • {user.roleDescription}
-                  </div>
-                  <div style={{ fontSize: "12px", color: "#5b6475" }}>
-                    Status: {user.status || "pending"}
-                  </div>
-                  <div style={{ fontSize: "12px", color: "#5b6475" }}>
-                    Phone: {user.phone}
-                  </div>
-                </div>
-                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", justifyContent: "flex-end" }}>
-                  <Button
-                    onClick={async () => {
-                      await approveUser(user.id);
-                    }}
-                    style={{ padding: "6px 10px", fontSize: "12px" }}
-                  >
-                    Approve
-                  </Button>
-                  <Button
-                    className="secondary"
-                    onClick={async () => {
-                      if (window.confirm(`Reject registration for ${user.name}?`)) {
-                        await rejectUser(user.id);
-                      }
-                    }}
-                    style={{ padding: "6px 10px", fontSize: "12px" }}
-                  >
-                    Reject
-                  </Button>
-                </div>
-              </div>
-            ))
-          )}
         </div>
       </div>
 

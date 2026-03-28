@@ -104,40 +104,9 @@ const verifyToken = (token) => {
 	}
 };
 
-const getPendingUsers = async () => {
-	const users = await User.findAll({ where: { status: "pending" } });
-	return users.map(sanitizeUser);
-};
-
-const approveUser = async (userId) => {
-	const user = await User.findByPk(userId);
-	if (!user) {
-		throw ApiError.notFound("User not found");
-	}
-
-	user.status = "active";
-	await user.save();
-
-	return sanitizeUser(user);
-};
-
-const rejectUser = async (userId) => {
-	const user = await User.findByPk(userId);
-	if (!user) {
-		throw ApiError.notFound("User not found");
-	}
-
-	await user.destroy();
-
-	return { message: "User registration rejected and deleted" };
-};
-
 module.exports = {
 	login,
 	register,
 	getCurrentUser,
 	verifyToken,
-	getPendingUsers,
-	approveUser,
-	rejectUser,
 };

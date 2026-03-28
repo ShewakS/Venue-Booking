@@ -31,10 +31,6 @@ const login = async (payload = {}) => {
 		throw ApiError.unauthorized("Account not found. Please register first.");
 	}
 
-	if (user.status === "pending") {
-		throw ApiError.unauthorized("Your account is pending admin approval. Please wait for admin to approve your registration.");
-	}
-
 	let isPasswordValid = false;
 
 	if (isBcryptHash(user.password)) {
@@ -79,13 +75,14 @@ const register = async (payload = {}) => {
 		role: value.role,
 		phone: value.phone,
 		roleDescription: value.roleDescription,
-		status: "pending",
+		status: "active",
 	});
 
 	return {
-		message: "Registration successful. Your account is pending admin approval.",
+		message: "Registration successful. You can now access your dashboard.",
+		token: createToken(user),
 		user: sanitizeUser(user),
-		isPending: true,
+		isPending: false,
 	};
 };
 

@@ -41,17 +41,11 @@ const Login = () => {
           roleDescription,
         });
 
-        setError(
-          result?.message ||
-            "Registration submitted. Your account is pending admin approval. Please login after approval."
-        );
-        setMode("login");
-        setName("");
-        setEmail("");
-        setPassword("");
-        setPhone("");
-        setRoleDescription("");
-        return;
+        user = result?.user || null;
+
+        if (!user) {
+          throw new Error(result?.message || "Registration failed. Please try again.");
+        }
       } else {
         user = await login({
           email,

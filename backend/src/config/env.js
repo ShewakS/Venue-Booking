@@ -22,7 +22,7 @@ const env = {
 	pgPort: Number(process.env.PG_PORT) || 5432,
 	pgDatabase: process.env.PG_DATABASE || "venue_booking",
 	pgUser: process.env.PG_USER || "postgres",
-	pgPassword: process.env.PG_PASSWORD || null,
+	pgPassword: typeof process.env.PG_PASSWORD === "string" ? process.env.PG_PASSWORD : "",
 	jwtSecret: process.env.JWT_SECRET || "venue-booking-dev-secret",
 	jwtExpiresIn: process.env.JWT_EXPIRES_IN || "7d",
 	corsOrigins: parseCorsOrigins(process.env.CORS_ORIGIN),

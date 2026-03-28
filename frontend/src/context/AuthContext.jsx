@@ -59,9 +59,13 @@ export const AuthProvider = ({ children }) => {
     });
     const payload = response?.data?.data || {};
 
-    // Registration must never authenticate immediately.
-    localStorage.removeItem(authTokenKey);
-    setUser(null);
+    if (payload.token) {
+      localStorage.setItem(authTokenKey, payload.token);
+    }
+
+    if (payload.user) {
+      setUser(payload.user);
+    }
 
     return payload;
   };

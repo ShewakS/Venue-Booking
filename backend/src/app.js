@@ -7,6 +7,21 @@ const { errorHandler } = require("./middlewares/error.middleware");
 
 const app = express();
 
+const normalizeOrigin = (origin) => origin.replace(/\/$/, "");
+
+const allowedOrigins = new Set(
+	[
+		"http://localhost:3000",
+		"http://127.0.0.1:3000",
+		"https://venue-booking-z528.vercel.app",
+		...env.corsOrigins,
+	]
+		.filter(Boolean)
+		.map((origin) => normalizeOrigin(origin.trim()))
+);
+
+const localhostPattern = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i;
+
 const corsOptions = {
 	origin(origin, callback) {
 		// Allow non-browser requests (curl, health checks) without Origin header.
@@ -15,7 +30,9 @@ const corsOptions = {
 			return;
 		}
 
-		if (env.corsOrigins.includes(origin)) {
+		const normalizedOrigin = normalizeOrigin(origin);
+
+		if (localhostPattern.test(normalizedOrigin) || allowedOrigins.has(normalizedOrigin)) {
 			callback(null, true);
 			return;
 		}

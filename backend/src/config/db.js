@@ -19,6 +19,14 @@ if (env.databaseUrl) {
 		logging: false,
 	});
 } else {
+	if (!env.pgPassword) {
+		throw new Error("Database configuration missing: set DATABASE_URL or PG_PASSWORD in backend/.env");
+	}
+
+	if (env.pgPassword === "your_secure_password_here") {
+		throw new Error("Database configuration invalid: replace PG_PASSWORD placeholder in backend/.env");
+	}
+
 	// Local development — individual env vars
 	sequelize = new Sequelize(env.pgDatabase, env.pgUser, env.pgPassword, {
 		host: env.pgHost,

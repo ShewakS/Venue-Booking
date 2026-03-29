@@ -7,16 +7,16 @@ const SpaceCard = ({ space }) => {
   const navigate = useNavigate();
 
   return (
-    <div className="card">
+    <div className="card space-card">
       {space.imageUrl ? (
         <div className="space-card-image-wrap">
           <img src={space.imageUrl} alt={`${space.name} venue`} className="space-card-image" />
         </div>
       ) : null}
-      <h4>{space.name}</h4>
-      <p style={{ color: "#5b6475" }}>{space.type}</p>
-      <p>Capacity: {space.capacity}</p>
-      <Button className="secondary" onClick={() => navigate(PATHS.CALENDAR)}>
+      <h4 className="space-card-title">{space.name}</h4>
+      <p className="space-card-type">{space.type}</p>
+      <p className="space-card-capacity">Capacity: {space.capacity}</p>
+      <Button className="secondary space-card-button" onClick={() => navigate(PATHS.CALENDAR)}>
         View Availability
       </Button>
     </div>

@@ -3,7 +3,7 @@ import SpaceCard from "./SpaceCard";
 
 const SpaceList = ({ spaces }) => {
   return (
-    <div className="card-grid">
+    <div className="space-grid">
       {spaces.map((space) => (
         <SpaceCard key={space.id} space={space} />
       ))}

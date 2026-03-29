@@ -80,13 +80,9 @@ const connectDB = async () => {
 			logger.info("Added bookings.updated_at column");
 		}
 
-		if (!bookingTable.requested_phone) {
-			await queryInterface.addColumn("bookings", "requested_phone", {
-				type: Sequelize.STRING(20),
-				allowNull: false,
-				defaultValue: "",
-			});
-			logger.info("Added bookings.requested_phone column");
+		if (bookingTable.requested_phone) {
+			await queryInterface.removeColumn("bookings", "requested_phone");
+			logger.info("Removed bookings.requested_phone column");
 		}
 
 		const userTable = await queryInterface.describeTable("users");

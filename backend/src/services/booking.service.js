@@ -1,6 +1,6 @@
 const { Op } = require("sequelize");
 const ApiError = require("../utils/ApiError");
-const { Booking, Space, TimetableOverride } = require("../models");
+const { Booking, Space, TimetableOverride, User } = require("../models");
 const {
 	validateCreateBooking,
 	validateBookingQuery,
@@ -41,7 +41,37 @@ const listBookings = async (query = {}) => {
 		order: [["id", "DESC"]],
 	});
 
-	return bookings.map(toPlain);
+	const bookingRows = bookings.map(toPlain);
+	const requestedNames = Array.from(
+		new Set(
+			bookingRows
+				.map((booking) => (typeof booking.requestedBy === "string" ? booking.requestedBy.trim() : ""))
+				.filter(Boolean)
+		)
+	);
+
+	const users = requestedNames.length
+		? await User.findAll({
+				where: {
+					name: {
+						[Op.in]: requestedNames,
+					},
+				},
+				attributes: ["name", "phone"],
+		  })
+		: [];
+
+	const phoneByName = new Map(
+		users.map((user) => [
+			typeof user.name === "string" ? user.name.trim() : "",
+			typeof user.phone === "string" ? user.phone : "",
+		])
+	);
+
+	return bookingRows.map((booking) => ({
+		...booking,
+		requestedPhone: phoneByName.get(typeof booking.requestedBy === "string" ? booking.requestedBy.trim() : "") || "",
+	}));
 };
 
 const getBookingById = async (bookingId) => {

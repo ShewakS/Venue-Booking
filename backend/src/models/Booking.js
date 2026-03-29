@@ -79,11 +79,6 @@ const Booking = sequelize.define(
 			defaultValue: "Campus User",
 			field: "requested_by",
 		},
-		requestedPhone: {
-			type: DataTypes.STRING(20),
-			defaultValue: "",
-			field: "requested_phone",
-		},
 		requestedRole: {
 			type: DataTypes.ENUM("admin", "faculty", "student", "coordinator", ""),
 			defaultValue: "",

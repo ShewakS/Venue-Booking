@@ -387,6 +387,36 @@ span {
   display: block;
 }
 
+.space-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.space-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.space-card-title {
+  margin: 0;
+}
+
+.space-card-type {
+  margin: 6px 0 0 0;
+  color: #5b6475;
+}
+
+.space-card-capacity {
+  margin: 6px 0 0 0;
+}
+
+.space-card-button {
+  margin-top: auto;
+  width: 100%;
+}
+
 .space-form-preview {
   width: min(100%, 280px);
   height: 160px;
@@ -614,28 +644,35 @@ span {
   outline: none;
 }
 
-.table {
+.table-wrap {
   width: 100%;
-  display: block;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+.table {
+  width: 100%;
+  min-width: 920px;
   border-collapse: separate;
   border-spacing: 0;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  overflow: hidden;
+  table-layout: fixed;
   background: #ffffff;
 }
 
 .table th,
 .table td {
   text-align: left;
-  padding: 10px 9px;
+  padding: 12px 12px;
   border-bottom: 1px solid var(--border);
+  vertical-align: middle;
 }
 
 .table td {
   font-size: 0.94rem;
+  color: #1d283b;
 }
 
 .table tr:last-child td {
@@ -649,6 +686,121 @@ span {
   letter-spacing: 0.7px;
   color: var(--muted);
   background: linear-gradient(180deg, #f4f7fc 0%, #eff3fa 100%);
+}
+
+.table tbody tr:hover {
+  background: #f9fbff;
+}
+
+.booking-table .booking-title {
+  display: block;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.booking-table .booking-subtitle {
+  color: #5b6475;
+  font-size: 12px;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.booking-table .actions-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.booking-table .col-event {
+  width: 16rem;
+}
+
+.booking-table .col-space {
+  width: 9rem;
+}
+
+.booking-table .col-date {
+  width: 8rem;
+}
+
+.booking-table .col-time {
+  width: 9.5rem;
+}
+
+.booking-table .col-participants {
+  width: 8.5rem;
+}
+
+.booking-table .col-organizer {
+  width: 9rem;
+}
+
+.booking-table .col-phone {
+  width: 10rem;
+}
+
+.booking-table .col-status {
+  width: 8rem;
+}
+
+.booking-table .col-actions {
+  width: 11rem;
+}
+
+.booking-mobile-list {
+  display: none;
+}
+
+.booking-mobile-item {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #ffffff;
+  padding: 12px;
+  display: grid;
+  gap: 10px;
+}
+
+.booking-mobile-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.booking-mobile-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 12px;
+}
+
+.booking-mobile-grid p {
+  margin: 0;
+  display: grid;
+  gap: 2px;
+  font-size: 0.92rem;
+}
+
+.booking-mobile-grid span {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.55px;
+  color: var(--muted);
+}
+
+.booking-mobile-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.booking-mobile-actions .button {
+  flex: 1 1 140px;
 }
 
 .form-grid {
@@ -804,6 +956,80 @@ span {
 }
 
 .slot-cell.available {
+  background: rgba(22, 163, 74, 0.18);
+  border-color: rgba(22, 163, 74, 0.4);
+}
+
+.calendar-controls {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.calendar-mobile-list {
+  display: none;
+}
+
+.calendar-mobile-space {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #ffffff;
+  padding: 10px;
+  display: grid;
+  gap: 10px;
+}
+
+.calendar-mobile-space h4 {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.calendar-mobile-slots {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.calendar-mobile-slot {
+  height: 34px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.calendar-mobile-slot.interactive {
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.calendar-mobile-slot.interactive:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.12);
+}
+
+.calendar-mobile-slot.academic {
+  background: rgba(220, 38, 38, 0.2);
+  border-color: rgba(220, 38, 38, 0.4);
+}
+
+.calendar-mobile-slot.pending {
+  background: rgba(245, 158, 11, 0.2);
+  border-color: rgba(245, 158, 11, 0.4);
+}
+
+.calendar-mobile-slot.booked {
+  background: rgba(44, 141, 247, 0.18);
+  border-color: rgba(44, 141, 247, 0.4);
+}
+
+.calendar-mobile-slot.available {
   background: rgba(22, 163, 74, 0.18);
   border-color: rgba(22, 163, 74, 0.4);
 }
@@ -973,6 +1199,10 @@ span {
   .card-grid {
     grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
   }
+
+  .space-grid {
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  }
 }
 
 @media (max-width: 768px) {
@@ -1018,12 +1248,43 @@ span {
 
   .table th,
   .table td {
-    padding: 8px 7px;
+    padding: 10px 9px;
     font-size: 0.86rem;
+  }
+
+  .table {
+    min-width: 840px;
+  }
+
+  .booking-desktop-table {
+    display: none;
+  }
+
+  .booking-mobile-list {
+    display: grid;
+    gap: 10px;
+  }
+
+  .space-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   }
 
   .section-header {
     gap: 10px;
+  }
+
+  .calendar-controls {
+    width: 100%;
+    align-items: stretch;
+  }
+
+  .calendar-controls .input-field {
+    width: 100%;
+  }
+
+  .calendar-controls .input-field input,
+  .calendar-controls .input-field select {
+    width: 100%;
   }
 }
 
@@ -1047,6 +1308,27 @@ span {
 
   .slot-grid {
     grid-template-columns: 120px repeat(11, minmax(58px, 1fr));
+  }
+
+  .space-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .slot-grid {
+    display: none;
+  }
+
+  .calendar-mobile-list {
+    display: grid;
+    gap: 10px;
+  }
+
+  .calendar-mobile-slots {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .booking-mobile-grid {
+    grid-template-columns: 1fr;
   }
 
   .login-layout {

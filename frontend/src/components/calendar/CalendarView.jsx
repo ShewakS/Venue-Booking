@@ -122,7 +122,7 @@ const CalendarView = ({ editable = false, overrides = [], onSetOverride }) => {
             {editable && !hasAcademicSlots ? " No academic slots for this date." : ""}
           </p>
         </div>
-        <div style={{ display: "flex", gap: "10px", alignItems: "flex-end", flexWrap: "wrap" }}>
+        <div className="calendar-controls">
           {editable ? (
             <label className="input-field" htmlFor="calendarSlotStatus">
               <span>Mark Slot As</span>
@@ -187,6 +187,35 @@ const CalendarView = ({ editable = false, overrides = [], onSetOverride }) => {
               );
             })}
           </React.Fragment>
+        ))}
+      </div>
+
+      <div className="calendar-mobile-list">
+        {spaces.map((space) => (
+          <article key={`mobile-${space.id}`} className="calendar-mobile-space">
+            <h4>{space.name}</h4>
+            <div className="calendar-mobile-slots">
+              {slots.map((slot) => {
+                const status = resolveSlotStatus(space.id, slot);
+                return (
+                  <div
+                    key={`mobile-${space.id}-${slot.label}`}
+                    className={`calendar-mobile-slot ${status}${editable ? " interactive" : ""}`}
+                    onClick={() => handleSlotClick(space.id, slot)}
+                    role={editable ? "button" : undefined}
+                    tabIndex={editable ? 0 : undefined}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") {
+                        handleSlotClick(space.id, slot);
+                      }
+                    }}
+                  >
+                    <span>{slot.start}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </article>
         ))}
       </div>
     </div>

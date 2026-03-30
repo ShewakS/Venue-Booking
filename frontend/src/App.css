@@ -1,25 +1,25 @@
 :root {
-  --bg: linear-gradient(180deg, #1f2340 0%, #252b4e 24%, #eef2fb 24%, #f3f6fc 100%);
+  --bg: #f5f7fb;
   --panel: #ffffff;
   --panel-muted: #f4f7fb;
-  --text: #111935;
+  --text: #1f2937;
   --muted: #6b7280;
-  --primary: #42c08c;
-  --primary-strong: #2da774;
+  --primary: #22c55e;
+  --primary-strong: #16a34a;
   --accent: #2c8df7;
   --border: #dce3f1;
   --success: #16a34a;
   --warning: #f59e0b;
   --danger: #dc2626;
-  --shadow: 0 22px 44px rgba(12, 20, 48, 0.18);
-  --shadow-soft: 0 10px 24px rgba(18, 28, 58, 0.12);
+  --shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+  --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 body {
   color: var(--text);
   background: var(--bg);
   min-height: 100vh;
-  font-family: "Manrope", "Segoe UI", Tahoma, sans-serif;
+  font-family: "Poppins", "Inter", "Roboto", "Segoe UI", Tahoma, sans-serif;
   font-size: 15px;
   font-weight: 500;
   line-height: 1.45;
@@ -41,7 +41,7 @@ h1 {
 }
 
 h2 {
-  font-size: clamp(2rem, 3.2vw, 2.8rem);
+  font-size: clamp(1.65rem, 2.23vw, 2.8rem);
   font-weight: 800;
 }
 
@@ -196,28 +196,31 @@ span {
 }
 
 .navbar {
-  background: #1f2340;
-  border-bottom: 1px solid rgb(229, 231, 235);
-  padding: 1.5rem 2rem;
+  background: #ffffff;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 0 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 20px;
   flex-wrap: wrap;
-  box-shadow: rgba(0, 0, 0, 0.05) 0px 4px 12px;
-  position: sticky;
-  top: 0px;
-  z-index: 5;
-  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-soft);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  min-height: 90px;
+  z-index: 30;
 }
 
 .mobile-menu-btn {
   display: none;
   width: 40px;
   height: 40px;
-  border: 1px solid rgba(255, 255, 255, 0.32);
+  border: 1px solid rgba(31, 41, 55, 0.2);
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.08);
+  background: #ffffff;
   align-items: center;
   justify-content: center;
   flex-direction: column;
@@ -229,7 +232,7 @@ span {
   width: 16px;
   height: 2px;
   border-radius: 999px;
-  background: #ffffff;
+  background: #1f2937;
 }
 
 .navbar-brand {
@@ -238,7 +241,7 @@ span {
   gap: 12px;
   font-size: 1.24rem;
   font-weight: 800;
-  color: #ffffff;
+  color: var(--text);
 }
 
 .navbar-brand-text {
@@ -249,7 +252,7 @@ span {
 
 .navbar-subtitle {
   margin: 0;
-  color: #b9c5e4;
+  color: var(--text);
   font-size: 0.92rem;
   font-weight: 600;
 }
@@ -258,14 +261,27 @@ span {
 .navbar h2,
 .navbar h3,
 .navbar strong {
-  color: #ffffff;
+  color: var(--text);
 }
 
 .navbar-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
   margin-left: auto;
+}
+
+.navbar-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(34, 197, 94, 0.16);
+  color: #15803d;
+  font-size: 0.9rem;
+  font-weight: 700;
 }
 
 .navbar-nav {
@@ -275,7 +291,7 @@ span {
 }
 
 .navbar-link {
-  color: #c4cceb;
+  color: var(--muted);
   padding: 9px 12px;
   border-radius: 10px;
   border: 1px solid transparent;
@@ -286,9 +302,9 @@ span {
 
 .navbar-link:hover,
 .navbar-link.active {
-  color: #ffffff;
-  background: rgba(66, 192, 140, 0.18);
-  border-color: rgba(66, 192, 140, 0.28);
+  color: var(--text);
+  background: rgba(34, 197, 94, 0.12);
+  border-color: rgba(34, 197, 94, 0.22);
 }
 
 .navbar-nav.open {
@@ -296,7 +312,7 @@ span {
 }
 
 .navbar-user {
-  color: #e5ebff;
+  color: var(--text);
   font-size: 1rem;
   font-weight: 600;
 }
@@ -315,7 +331,7 @@ span {
   min-height: 100vh;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(244, 247, 253, 0.92) 20%, #f4f7fd 100%);
+  background: #f5f7fb;
 }
 
 .dashboard-particles {
@@ -332,23 +348,25 @@ span {
 }
 
 .content {
-  padding: 24px;
+  padding: 45px 24px 24px;
   min-width: 0;
   overflow-x: hidden;
 }
 
 .card {
   background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  padding: 16px;
   box-shadow: var(--shadow-soft);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .card h3 {
-  margin-bottom: 10px;
-  color: #1a2740;
+  margin: 0 0 10px 0;
+  color:#1f2937;
+  font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+  font-weight: 800;
   letter-spacing: -0.01em;
   position: relative;
   padding-bottom: 6px;
@@ -366,8 +384,10 @@ span {
 }
 
 .card h4 {
-  color: #1f2d46;
-  letter-spacing: -0.01em;
+  color: #374151;
+  font-size: 0.94rem;
+  font-weight: 700;
+  letter-spacing: 0;
 }
 
 .space-card-image-wrap {
@@ -400,6 +420,7 @@ span {
 }
 
 .space-card-title {
+  color:black;
   margin: 0;
 }
 
@@ -456,23 +477,37 @@ span {
 .stat-card-head {
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.stat-label {
+  margin: 0;
+  font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+  font-weight: 800;
+  color: #1f2937;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  padding-bottom: 0;
 }
 
 .stat-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 10px;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  color: #15803d;
+  background: rgba(34, 197, 94, 0.14);
+  border: 1px solid rgba(34, 197, 94, 0.22);
 }
 
 .stat-value {
   margin: 8px 0 0 0;
   font-size: clamp(1.4rem, 2vw, 1.8rem);
   font-weight: 800;
-  color: #1a2740;
+  color: #1f2937;
   letter-spacing: -0.02em;
 }
 
@@ -486,9 +521,9 @@ span {
 }
 
 .stat-card.tone-blue .stat-icon {
-  color: #226dcb;
-  background: rgba(44, 141, 247, 0.14);
-  border: 1px solid rgba(44, 141, 247, 0.25);
+  color: #15803d;
+  background: rgba(34, 197, 94, 0.14);
+  border: 1px solid rgba(34, 197, 94, 0.22);
 }
 
 .stat-card.tone-teal {
@@ -501,9 +536,9 @@ span {
 }
 
 .stat-card.tone-teal .stat-icon {
-  color: #1e9869;
-  background: rgba(66, 192, 140, 0.14);
-  border: 1px solid rgba(66, 192, 140, 0.3);
+  color: #15803d;
+  background: rgba(34, 197, 94, 0.14);
+  border: 1px solid rgba(34, 197, 94, 0.22);
 }
 
 .stat-card.tone-amber {
@@ -516,9 +551,9 @@ span {
 }
 
 .stat-card.tone-amber .stat-icon {
-  color: #c67f08;
-  background: rgba(245, 158, 11, 0.13);
-  border: 1px solid rgba(245, 158, 11, 0.28);
+  color: #15803d;
+  background: rgba(34, 197, 94, 0.14);
+  border: 1px solid rgba(34, 197, 94, 0.22);
 }
 
 .stat-card.tone-violet {
@@ -531,9 +566,9 @@ span {
 }
 
 .stat-card.tone-violet .stat-icon {
-  color: #4c50c7;
-  background: rgba(99, 102, 241, 0.13);
-  border: 1px solid rgba(99, 102, 241, 0.25);
+  color: #15803d;
+  background: rgba(34, 197, 94, 0.14);
+  border: 1px solid rgba(34, 197, 94, 0.22);
 }
 
 .card:hover {
@@ -543,8 +578,8 @@ span {
 
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 20px;
 }
 
 .badge {
@@ -606,9 +641,9 @@ span {
 }
 
 .navbar .button.secondary {
-  background: rgba(255, 255, 255, 0.08);
-  color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: #ffffff;
+  color: #1f2937;
+  border: 1px solid rgba(31, 41, 55, 0.2);
   box-shadow: none;
 }
 
@@ -862,9 +897,9 @@ span {
 
 .role-pill {
   text-transform: capitalize;
-  background: rgba(66, 192, 140, 0.16);
-  color: #d8f8ea;
-  border: 1px solid rgba(66, 192, 140, 0.34);
+  background: rgba(34, 197, 94, 0.12);
+  color: #166534;
+  border: 1px solid rgba(34, 197, 94, 0.26);
   padding: 4px 10px;
   border-radius: 999px;
   font-size: 12px;
@@ -1149,7 +1184,8 @@ span {
 
 @media (max-width: 900px) {
   .navbar {
-    gap: 10px;
+    gap: 12px;
+    padding: 8px 16px;
   }
 
   .navbar-actions {
@@ -1167,7 +1203,7 @@ span {
     width: 100%;
     order: 4;
     padding-top: 6px;
-    border-top: 1px solid rgba(255, 255, 255, 0.14);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
     flex-wrap: wrap;
     gap: 6px;
   }
@@ -1193,11 +1229,12 @@ span {
 
 @media (max-width: 1200px) {
   .content {
-    padding: 20px;
+    padding: 70px 20px 20px;
   }
 
   .card-grid {
-    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 16px;
   }
 
   .space-grid {
@@ -1211,11 +1248,11 @@ span {
   }
 
   .content {
-    padding: 16px;
+    padding: 68px 16px 16px;
   }
 
   .navbar {
-    padding: 1rem 1rem;
+    padding: 8px 12px;
   }
 
   .navbar-brand {
@@ -1333,6 +1370,10 @@ span {
 
   .login-layout {
     width: min(90%, 480px);
+  }
+
+  .content {
+    padding: 66px 12px 12px;
   }
 
   .login-content {

@@ -9,6 +9,7 @@ import { ROLES, roleHomePath } from "../../utils/roles";
 const TopNavbar = () => {
   const { user, logout } = useAuth();
   const [isNavOpen, setIsNavOpen] = useState(false);
+  const userInitial = user?.name ? String(user.name).trim().charAt(0).toUpperCase() : "U";
   const roleText =
     user?.role === "coordinator" ? "STUDENT" : (user?.role ? String(user.role).toUpperCase() : "GUEST");
 
@@ -57,6 +58,7 @@ const TopNavbar = () => {
       </nav>
 
       <div className="navbar-actions">
+        <span className="navbar-avatar" aria-hidden="true">{userInitial}</span>
         <span className="role-pill">{roleText}</span>
         <span className="navbar-user">{user?.name || "Guest"}</span>
         <Button className="secondary" onClick={logout}>

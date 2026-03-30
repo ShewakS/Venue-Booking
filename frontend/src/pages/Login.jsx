@@ -67,7 +67,7 @@ const Login = () => {
           <div className="login-content-head">
             <h3>Sri Eshwar College of Engineering</h3>
             <span className="login-accent-line" />
-            <p className="muted">Smart Campus Space Booking Portal</p>
+            <p className="muted">Smart Campus Venue Booking Portal</p>
           </div>
 
           <form className="login-form" onSubmit={handleSubmit}>

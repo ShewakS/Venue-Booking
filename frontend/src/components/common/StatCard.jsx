@@ -56,10 +56,12 @@ const StatCard = ({ title, value, icon = "bookings", tone = "blue" }) => {
   return (
     <div className={`card stat-card tone-${tone}`}>
       <div className="stat-card-head">
-        <span className="stat-icon">
-          <Icon name={icon} />
-        </span>
-        <h4>{title}</h4>
+        <h3 className="stat-label">{title}</h3>
+        {icon ? (
+          <span className="stat-icon">
+            <Icon name={icon} />
+          </span>
+        ) : null}
       </div>
       <p className="stat-value">{value}</p>
     </div>

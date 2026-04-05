@@ -107,13 +107,31 @@ const connectDB = async () => {
 
 		if (!userTable.status) {
 			await queryInterface.addColumn("users", "status", {
-				type: Sequelize.ENUM("pending", "active"),
+				type: Sequelize.STRING(16),
 				allowNull: false,
-				// Existing users should stay login-capable after migration.
 				defaultValue: "active",
 			});
 			logger.info("Added users.status column");
 		}
+
+		// Remove legacy pending-approval workflow at DB level.
+		await sequelize.query("UPDATE users SET status = 'active' WHERE status IS NULL OR status = 'pending'");
+		await sequelize.query("ALTER TABLE users ALTER COLUMN status TYPE VARCHAR(16) USING status::text");
+		await sequelize.query("ALTER TABLE users ALTER COLUMN status SET DEFAULT 'active'");
+		await sequelize.query("ALTER TABLE users ALTER COLUMN status SET NOT NULL");
+		await sequelize.query(`
+			DO $$
+			BEGIN
+				IF NOT EXISTS (
+					SELECT 1
+					FROM pg_constraint
+					WHERE conname = 'users_status_active_check'
+				) THEN
+					ALTER TABLE users
+					ADD CONSTRAINT users_status_active_check CHECK (status = 'active');
+				END IF;
+			END $$;
+		`);
 
 		// Ensure timetable_overrides table exists
 		const tableList = await queryInterface.showAllTables();

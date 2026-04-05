@@ -50,9 +50,12 @@ const User = sequelize.define(
 			allowNull: false,
 		},
 		status: {
-			type: DataTypes.ENUM("pending", "active"),
+			type: DataTypes.STRING(16),
 			allowNull: false,
-			defaultValue: "pending",
+			defaultValue: "active",
+			validate: {
+				isIn: [["active"]],
+			},
 		},
 	},
 	{

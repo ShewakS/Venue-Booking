@@ -82,7 +82,6 @@ const register = async (payload = {}) => {
 		message: "Registration successful. You can now access your dashboard.",
 		token: createToken(user),
 		user: sanitizeUser(user),
-		isPending: false,
 	};
 };
 
